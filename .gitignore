@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore Visual Studio Code settings
+.vscode/
+*.code-workspace
+
 # C extensions
 *.so
 
