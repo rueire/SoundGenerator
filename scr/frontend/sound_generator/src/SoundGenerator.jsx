@@ -1,31 +1,37 @@
-//import { useState } from 'react'
-//import './App.css'   LUO UUSI
+import './Generator.css'
+import syxDownload from './assets/syxDownload'
 
 function SoundGenerator() {
-  const [count, setCount] = useState(0)
+
+  const handleDownload = async() => {
+    console.log("Button pressed")
+
+    const blob = await syxDownload(); // get blob from backend
+    if (!blob) {
+      console.log('No connection to backend yet!')
+      return; // handle error
+    }
+
+    const link = document.createElement('a');
+
+    
+    // Creates URL for the file that was received as blob,
+    //Will download a file no matter what 
+    link.href = URL.createObjectURL(blob);
+
+    // sets download - attribute to the link,
+    // which tells what name the downloaded file has when user presses download
+    link.download = 'generated_sound.syx';
+
+    link.click();
+  }
+
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='testbtn'>
+        <button className='test_btn' onClick={handleDownload}>Test Button</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
