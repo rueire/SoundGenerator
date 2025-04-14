@@ -2,10 +2,12 @@ import { useState } from 'react';
 import './Generator.css'
 import syxDownload from './assets/syxDownload'
 import ParameterForm from './assets/parameters'
+import SyxUpload from './assets/syxUpload';
 
 function SoundGenerator() {
 
   const [isGenerating, setIsGenerating] = useState(false); // Track the generation state
+  // const [generatedFile, setGeneratedFile] = useState(null); // Uploaded .syx file
   const [generatedFile, setGeneratedFile] = useState(null); // Store the generated .syx file
 
   //download button handling
@@ -58,18 +60,47 @@ function SoundGenerator() {
           }
       }
   
+  // take file from user
+  const Uploadfile = (file) => {
+    console.log("Upload button pressed")
+    console.log('Uploaded file:', file);
+    
+    //send to backend
+    const formData = new FormData();
+    formData.append("syxFile", file);
+
+     try {
+      const response = fetch("/api/uploadfile", {
+        method: "POST",
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error("File upload failed");
+      }
+      
+      const result = response.json();
+      console.log('result:', result);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   return (
     <>
     <div className='parameter_form'>
       <ParameterForm onSubmit={ParameterForm} />
-        <div className='buttons_container'>
-          <button className='generate_btn' onClick={GenerateSound}>Generate Sound</button>
-          {generatedFile && (<button onClick={handleDownload} disabled={isGenerating}>
-            Download File
-          </button>)}
-        </div>
-    </div>
+      </div>
+      <div className='upload_form'>
+        <SyxUpload SyxUpload={Uploadfile} />
+      </div>
+      <div className='buttons_container'>
+        {/* <button className='upload_btn'>Upload file</button> */}
+        <button className='generate_btn' onClick={GenerateSound}>Generate Sound</button>
+        {generatedFile && (<button onClick={handleDownload} disabled={isGenerating}>
+          Download File
+        </button>)}
+      </div>
     </>
   )
 }
