@@ -2,7 +2,7 @@
 
 export default async function syxDownload() {
 
-
+//Download syx generated from backend
     // requestDownload requests backend
     try {
         const response = await fetch('esimerkkinä: /api/generate_syx');
