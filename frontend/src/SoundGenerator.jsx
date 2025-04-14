@@ -61,16 +61,15 @@ function SoundGenerator() {
       }
   
   // take file from user
-  const Uploadfile = (file) => {
+  const Uploadfile = async(file) => {
     console.log("Upload button pressed")
-    console.log('Uploaded file:', file);
     
     //send to backend
     const formData = new FormData();
     formData.append("syxFile", file);
 
      try {
-      const response = fetch("/api/uploadfile", {
+       const response = await fetch("http://localhost:8000/api/uploadfile", {
         method: "POST",
         body: formData,
       });
@@ -79,7 +78,7 @@ function SoundGenerator() {
         throw new Error("File upload failed");
       }
       
-      const result = response.json();
+      const result = await response.json();
       console.log('result:', result);
     } catch (error) {
       console.error("Error:", error);
@@ -92,7 +91,7 @@ function SoundGenerator() {
       <ParameterForm onSubmit={ParameterForm} />
       </div>
       <div className='upload_form'>
-        <SyxUpload SyxUpload={Uploadfile} />
+        <SyxUpload onFileUpload={Uploadfile} />
       </div>
       <div className='buttons_container'>
         {/* <button className='upload_btn'>Upload file</button> */}
