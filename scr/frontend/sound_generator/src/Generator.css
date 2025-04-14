@@ -12,20 +12,54 @@ html {
     background-color: grey;
 }
 
-.testbtn {
-    display: flex;
-    justify-content: center;
+/*========================================*/
+/*PARAMETER FORM CSS*/
+
+.parameter-form {
     align-items: center;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
-    /* width/height of the container, not the button!*/
-    width: 300px;
-    height: 300px;
+    padding: 10%;
+    margin: 0%;
+    background-color: bisque;
 }
 
-.test_btn {
-    width: 300px;
-    height: 50px;
-
-    background-color: black;
-    color: bisque;
+.basic-parameters-container {
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10%;
 }
+
+/*========================================*/
+
+/*PARAMETER SLIDER CSS*/
+.lfo-slider-container {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 20px;
+}
+
+.lfo-slider {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.slider-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.slider-values span {
+    font-size: 12px;
+    color: #333;
+}
+
+/*========================================*/
