@@ -2,16 +2,19 @@ from lxml import etree
 import sys
 import os
 
+# Takes a directory of syx files and converts them into xml.
+
+
 # ***
 # Install lxml.
+# Easiest way is to have the syx directory in the same root as this app.
 # Run with:
 
-# python syx_to_xml1.py filename.syx
-# It will create a .xml file with the same name.
+# python syx_to_xml_bulk.py yoursyxdirectory
+# also
+# python syx_to_xml_bulk.py path/to/folder (didn't confirm if this actually works)
 
-# OR
-# define a new filename for the xml:
-# python syx_to_xml1.py filename.syx new_filename.xml
+# It will create a folder (named converted_xml) inside the given syx directory.
 # ***
 
 
@@ -19,7 +22,7 @@ def parse_dx7_patch(data):
     if len(data) != 128:
         raise ValueError(f"Unexpected patch size: {len(data)} bytes (expected 128).")
 
-    #Extracts parameters from the 128-byte DX7 patch.
+    # Extracts the parameters from the 128-byte DX7 patch.
     patch = {
         "name": data[118:128].decode('ascii', errors='ignore').strip(),
         "algorithm": (data[110] & 0b11111) + 1, # 0-31, but in reality 1-32.  Algorithm is in bits 0–4 of byte 110.
@@ -44,7 +47,7 @@ def parse_dx7_patch(data):
         "pitch_eg_level4": data[109],
     }
 
-    # Operator parameters (DX7 has 6 operators)
+    # Operator parameters (DX7 has 6 operators).
     for op in range(6):
         base = op * 17  # Each operator's data is 17 bytes long.
 
@@ -86,43 +89,32 @@ def clean_for_xml(text):
     return str(text)  # For non-string values (like numbers, already safe).
 
 def syx_to_xml(syx_file, xml_file):
-    # Converts a DX7 Sysex (.syx) file into an XML format.
+    # Converts a DX7 Sysex (.syx) file into XML format.
     with open(syx_file, "rb") as f:
         full_syx_data = f.read()
 
-    #if syx_data[0] != 0xF0 or syx_data[-1] != 0xF7:
-    #    raise ValueError("Invalid Sysex file format")
-
+    # Checks if the header is in correct form.
     if full_syx_data[:6] != b'\xF0\x43\x00\x09\x20\x00':
         raise ValueError("Invalid Sysex header: Expected Yamaha DX7 bulk header")
 
+    # Checks if the syx file ends in a correct byte.
     if full_syx_data[-1] != 0xF7:
-        print(f"Warning: Sysex file {syx_file} does not end with 0xF7. Found: {hex(full_syx_data[-1])}")
+        print(f"Sysex file {syx_file} does not end with 0xF7. Found instead: {hex(full_syx_data[-1])}")
     else:
         print(f"Last byte of the file is correct: {hex(full_syx_data[-1])}")
 
-    # Extract just the patch data (assume 6-byte header + 4096 bytes data)
+    # Extracts just the patch data (assume 6-byte header + 4096 bytes data).
     patch_data_start = 6
     patch_data_end = patch_data_start + 4096
 
+    # Checks the length of the syx file.
     if len(full_syx_data) < patch_data_end:
         raise ValueError(f"File too short to contain 32 patches: {len(full_syx_data)} bytes")
 
-    syx_data = full_syx_data[patch_data_start:patch_data_end]  # Trim anything after 4096 bytes
-
-    #expected_total_length = 6 + num_patches * patch_size + 1  # 6-byte header + data + 0xF7
-
-    #if len(syx_data) < expected_total_length:
-    #    print(f"Warning: Sysex file too short ({len(syx_data)} bytes), expected at least {expected_total_length}.")
-    #    return
-
-    #elif len(syx_data) > expected_total_length:
-    #    print(f"Warning: {syx_file} is longer than expected ({len(syx_data)} bytes). Trimming extra bytes.")
-    #    syx_data = syx_data[:expected_total_length]
+    syx_data = full_syx_data[patch_data_start:patch_data_end]  # Trims anything after 4096 bytes (if there is).
 
     print("Header bytes:", full_syx_data[:6])
     print("First patch starts at:", full_syx_data[6:14])
-
 
     root = etree.Element("DX7Patches")
 
@@ -135,7 +127,7 @@ def syx_to_xml(syx_file, xml_file):
         patch_data = syx_data[start:end]
 
         if len(patch_data) != patch_size:
-            print(f"Warning: Patch {i+1} has invalid size ({len(patch_data)} bytes), skipping.")
+            print(f"Patch {i+1} has invalid size ({len(patch_data)} bytes), skipping.")
             continue
 
         patch_info = parse_dx7_patch(patch_data)
@@ -145,13 +137,11 @@ def syx_to_xml(syx_file, xml_file):
         # For debuggig problem with algorithms, may remove later:
         if patch_info["algorithm"] > 32:
             print(f"Patch {i+1} has invalid algorithm: {patch_info['algorithm']}")
-        #if not patch_info["name"] or not patch_info["name"][0].isalpha():
-        #    print(f"Patch {i+1} has sus name: '{patch_info['name']}'")
 
         patch_element = etree.SubElement(root, "Patch", id=str(i + 1))
 
         for key, value in patch_info.items():
-            if isinstance(value, dict):  # Operator parameters
+            if isinstance(value, dict):  # Operator parameters.
                 op_element = etree.SubElement(patch_element, key)
                 for op_key, op_value in value.items():
                     etree.SubElement(op_element, op_key).text = clean_for_xml(op_value)
@@ -170,24 +160,26 @@ def syx_to_xml(syx_file, xml_file):
 def main():
     if len(sys.argv) < 2:
         print("Usage:")
-        print("For one file...")
+        print("For one file:")
         print("python syx_to_xml.py your_file.syx [output.xml]")
         print("OR")
-        print("For a directory of files...")
+        print("For a directory of files:")
+        print("python syx_to_xml.py foldername")
+        print("OR if the folder is not in the same root:")
         print("python syx_to_xml.py path/to/folder_with_syx_files")
         sys.exit(1)
 
     input_path = sys.argv[1]
 
     if os.path.isdir(input_path):
-        # Create output folder
+        # Creates an output folder.
         output_folder = os.path.join(input_path, "converted_xml")
         os.makedirs(output_folder, exist_ok=True)
 
         print(f"Batch converting all .syx files in folder: {input_path}")
         print(f"Output will be saved to: {output_folder}")
 
-        # Handle a folder full of .syx files
+        # Handles a folder full of .syx files.
         for filename in os.listdir(input_path):
             if filename.lower().endswith(".syx"):
                 syx_file = os.path.join(input_path, filename)
@@ -198,7 +190,7 @@ def main():
                 except Exception as e:
                     print(f"Failed to convert {filename}: {e}")
     else:
-        # Handle single file conversion
+        # Handles single file conversion.
         input_file = input_path
         output_file = sys.argv[2] if len(sys.argv) > 2 else input_file.replace(".syx", ".xml") # User can define a new name for the xml file with the second argument.
         syx_to_xml(input_file, output_file)
