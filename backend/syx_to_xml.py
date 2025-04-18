@@ -1,5 +1,6 @@
 from lxml import etree
 import sys
+import os
 
 # ***
 # Install lxml.
@@ -14,6 +15,8 @@ import sys
 # ***
 
 def parse_dx7_patch(data):
+
+    print(f"Parsing patch of size {len(data)}")
     if len(data) != 128:
         raise ValueError(f"Unexpected patch size: {len(data)} bytes (expected 128)")
 
@@ -78,32 +81,42 @@ def parse_dx7_patch(data):
     return patch
 
 def clean_for_xml(text):
-    # Removes invalid XML characters (like control characters, NULL bytes).
-    if isinstance(text, str):
-        return ''.join(ch for ch in text if ch.isprintable())  # Only printable characters are allowed.
-    return str(text)  # For non-string values (like numbers, already safe).
+    if not isinstance(text, str):
+        try:
+            text = str(text)  # Muutetaan esim. lista/dict stringiksi
+        except Exception as e:
+            print("Error converting to string:", e)
+            return ""
 
-def syx_to_xml(syx_file, xml_file):
-    # Converts a DX7 Sysex (.syx) file into an XML format.
-    with open(syx_file, "rb") as f:
-        syx_data = f.read()
+    return ''.join(ch for ch in text if ch.isprintable())
 
+def syx_to_xml(syx_data, xml_file):
+    # Mihin kansioon tallennetaan
+    output_dir = "xml_output"  # voit muuttaa tämän haluamaksesi
+    os.makedirs(output_dir, exist_ok=True)  # Luo kansion, jos ei ole
+    
+    xml_path = os.path.join(output_dir, xml_file)
+
+    # Muuntaa Sysex-tiedoston muistista XML-muotoon.
     if syx_data[0] != 0xF0 or syx_data[-1] != 0xF7:
         raise ValueError("Invalid Sysex file format")
 
     num_patches = 32  # DX7 bulk dump always has 32 patches/voices.
     patch_size = 128
 
-    expected_total_length = 6 + num_patches * patch_size + 1  # 6-byte header + data + 0xF7
+    expected_total_length = 7 + num_patches * patch_size + 1  # 6-byte header + data + 0xF7
 
-    if len(syx_data) < expected_total_length:
+    if not len(syx_data) == expected_total_length:
         print(f"Warning: Sysex file too short ({len(syx_data)} bytes), expected at least {expected_total_length}.")
         return
+    
+    elif len(syx_data) == expected_total_length:
+        print("Detected single-patch Sysex file")
 
     root = etree.Element("DX7Patches")
 
     for i in range(num_patches):
-        start = 6 + i * patch_size
+        start = 7 + i * patch_size
         end = start + patch_size
         patch_data = syx_data[start:end]
 
@@ -134,10 +147,10 @@ def syx_to_xml(syx_file, xml_file):
     # Pretty-print with lxml.
     pretty_xml = etree.tostring(root, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
-    with open(xml_file, "wb") as f:
+    with open(xml_path, "wb") as f:
         f.write(pretty_xml)
 
-    print(f"Converted {syx_file} to {xml_file} with pretty formatting.")
+    print(f"Converted {syx_data} to {xml_file} with pretty formatting.")
 
 def main():
     if len(sys.argv) < 2:
