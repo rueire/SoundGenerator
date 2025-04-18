@@ -1,6 +1,5 @@
 from lxml import etree
-import sys
-import os
+import sys, os
 
 # ***
 # Install lxml.
@@ -15,8 +14,6 @@ import os
 # ***
 
 def parse_dx7_patch(data):
-
-    print(f"Parsing patch of size {len(data)}")
     if len(data) != 128:
         raise ValueError(f"Unexpected patch size: {len(data)} bytes (expected 128)")
 
@@ -81,47 +78,55 @@ def parse_dx7_patch(data):
     return patch
 
 def clean_for_xml(text):
-    if not isinstance(text, str):
-        try:
-            text = str(text)  # Muutetaan esim. lista/dict stringiksi
-        except Exception as e:
-            print("Error converting to string:", e)
-            return ""
+     # Removes invalid XML characters (like control characters, NULL bytes).
+    if isinstance(text, str):
+        return ''.join(ch for ch in text if ch.isprintable())  # Only printable characters are allowed.
+    return str(text)  # For non-string values (like numbers, already safe).
 
-    return ''.join(ch for ch in text if ch.isprintable())
+def syx_to_xml(syx_file, xml_file):
 
-def syx_to_xml(syx_data, xml_file):
-    # Mihin kansioon tallennetaan
-    output_dir = "xml_output"  # voit muuttaa tämän haluamaksesi
-    os.makedirs(output_dir, exist_ok=True)  # Luo kansion, jos ei ole
-    
+    # Directory as variable
+    output_dir = "xml_output"  # dir name
+    os.makedirs(output_dir, exist_ok=True)  # create dir if not exists
+    # dir path, syx_data initialization
     xml_path = os.path.join(output_dir, xml_file)
+    syx_data = syx_file
 
-    # Muuntaa Sysex-tiedoston muistista XML-muotoon.
-    if syx_data[0] != 0xF0 or syx_data[-1] != 0xF7:
-        raise ValueError("Invalid Sysex file format")
+    # Checks if the header is in correct form.
+    if syx_data[:6] != b'\xF0\x43\x00\x09\x20\x00':
+        raise ValueError("Invalid Sysex header: Expected Yamaha DX7 bulk header")
 
-    num_patches = 32  # DX7 bulk dump always has 32 patches/voices.
-    patch_size = 128
+    # Checks if the syx file ends in a correct byte.
+    if syx_data[-1] != 0xF7:
+        print(f"Sysex file {syx_file} does not end with 0xF7. Found instead: {hex(syx_data[-1])}")
+    else:
+        print(f"Last byte of the file is correct: {hex(syx_data[-1])}")
 
-    expected_total_length = 7 + num_patches * patch_size + 1  # 6-byte header + data + 0xF7
+    # Extracts just the patch data (assume 6-byte header + 4096 bytes data).
+    patch_data_start = 6
+    patch_data_end = patch_data_start + 4096
 
-    if not len(syx_data) == expected_total_length:
-        print(f"Warning: Sysex file too short ({len(syx_data)} bytes), expected at least {expected_total_length}.")
-        return
-    
-    elif len(syx_data) == expected_total_length:
-        print("Detected single-patch Sysex file")
+    # Checks the length of the syx file.
+    if len(syx_data) < patch_data_end:
+        raise ValueError(f"File too short to contain 32 patches: {len(syx_data)} bytes")
+
+    syx_data = syx_data[patch_data_start:patch_data_end]  # Trims anything after 4096 bytes (if there is).
+
+    print("Header bytes:", syx_data[:6])
+    print("First patch starts at:", syx_data[6:14])
 
     root = etree.Element("DX7Patches")
 
+    num_patches = 32  # DX7 bulk dump always has 32 patches.
+    patch_size = 128
+
     for i in range(num_patches):
-        start = 7 + i * patch_size
+        start = i * patch_size
         end = start + patch_size
         patch_data = syx_data[start:end]
 
         if len(patch_data) != patch_size:
-            print(f"Warning: Patch {i+1} has invalid size ({len(patch_data)} bytes), skipping.")
+            print(f"Patch {i+1} has invalid size ({len(patch_data)} bytes), skipping.")
             continue
 
         patch_info = parse_dx7_patch(patch_data)
@@ -131,13 +136,11 @@ def syx_to_xml(syx_data, xml_file):
         # For debuggig problem with algorithms, may remove later:
         if patch_info["algorithm"] > 32:
             print(f"Patch {i+1} has invalid algorithm: {patch_info['algorithm']}")
-        if not patch_info["name"] or not patch_info["name"][0].isalpha():
-            print(f"Patch {i+1} has sus name: '{patch_info['name']}'")
 
         patch_element = etree.SubElement(root, "Patch", id=str(i + 1))
 
         for key, value in patch_info.items():
-            if isinstance(value, dict):  # Operator parameters
+            if isinstance(value, dict):  # Operator parameters.
                 op_element = etree.SubElement(patch_element, key)
                 for op_key, op_value in value.items():
                     etree.SubElement(op_element, op_key).text = clean_for_xml(op_value)
@@ -146,11 +149,12 @@ def syx_to_xml(syx_data, xml_file):
 
     # Pretty-print with lxml.
     pretty_xml = etree.tostring(root, pretty_print=True, xml_declaration=True, encoding="UTF-8")
-
+    # XML DIR that was spesified at the start
     with open(xml_path, "wb") as f:
         f.write(pretty_xml)
 
     print(f"Converted {syx_data} to {xml_file} with pretty formatting.")
+
 
 def main():
     if len(sys.argv) < 2:
