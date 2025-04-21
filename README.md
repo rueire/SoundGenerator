@@ -18,11 +18,13 @@ TBA <br>
 open cmd in root, create venv(python -m venv venv) <br>
 or activate it (venv\Scripts\activate) <br> 
 
-then go to BACKEND dir, open cmd and run in venv: pip install -r requirements.txt
+then go to BACKEND dir <br>
+NOTE this needs to be done only when first using venv or when req. has been updated!<br>
+open cmd and run in venv: pip install -r requirements.txt
 
-then: uvicorn fileupload:app --reload <br>
+then: uvicorn api:app --reload <br>
 OR if you know the port: <br>
-uvicorn fileupload:app --reload --port XXXX <br>
+uvicorn api:app --reload --port XXXX <br>
 
 **Open frontend:** <br>
 in SoundGenerator/frontend  => npm install <br>
