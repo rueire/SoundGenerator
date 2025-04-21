@@ -9,8 +9,11 @@ function SoundGenerator() {
   const [isGenerating, setIsGenerating] = useState(false); // Track the generation state
   // const [generatedFile, setGeneratedFile] = useState(null); // Uploaded .syx file
   const [generatedFile, setGeneratedFile] = useState(null); // Store the generated .syx file
+  const [xmlBlob, setXmlBlob] = useState(null); // returned xml
 
-  //download button handling
+  // generated_file downlod handling
+  // should be put to GenerateSound?
+  //doesnt rly work yet since nothing is generated
   const handleDownload = async() => {
     console.log("Button2 pressed")
 
@@ -69,7 +72,7 @@ function SoundGenerator() {
     formData.append("syxFile", file);
 
      try {
-       const response = await fetch("http://localhost:8000/api/uploadfile", {
+       const response = await fetch("http://localhost:8000/api/upload_syx_file", {
         method: "POST",
         body: formData,
       });
@@ -77,13 +80,27 @@ function SoundGenerator() {
       if (!response.ok) {
         throw new Error("File upload failed");
       }
-      
-      const result = await response.json();
-      console.log('result:', result);
+
+      // receive xml from backend
+      const xmlBlob = await response.blob();
+      setXmlBlob(xmlBlob);
+
     } catch (error) {
       console.error("Error:", error);
     }
   }
+  // XML button onClick
+  const XmlDownload = () => {
+    if (xmlBlob) {
+      const url = URL.createObjectURL(xmlBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'converted.xml'; // customize the filename here
+      link.click();
+      URL.revokeObjectURL(url); // Clean up the object URL after download
+    }
+  }
+
 
   return (
     <>
@@ -92,6 +109,12 @@ function SoundGenerator() {
       </div>
       <div className='upload_form'>
         <SyxUpload onFileUpload={Uploadfile} />
+        {/* Display download button only if XML is available */}
+        {xmlBlob && (
+          <button onClick={XmlDownload} className="download-button">
+            Download XML
+          </button>
+        )}
       </div>
       <div className='buttons_container'>
         {/* <button className='upload_btn'>Upload file</button> */}
