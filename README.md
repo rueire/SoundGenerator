@@ -14,15 +14,17 @@ Frontend: React + JS <br>
 TBA <br>
 
 ## How to use IN DEVELOPMENT <br>
+
 **Connect backend to frontend:** <br>
-open cmd in root, create venv(python -m venv venv) <br>
+1 -open cmd in root, create venv(python -m venv venv) <br>
 or activate it (venv\Scripts\activate) <br> 
 
-then go to BACKEND dir <br>
+2 -go to BACKEND dir <br>
 NOTE this needs to be done only when first using venv or when req. has been updated!<br>
 open cmd and run in venv: pip install -r requirements.txt
+Updating append in backend dir terminal: pip freeze > requirements.txt
 
-then: uvicorn api:app --reload <br>
+3 -in terminal: uvicorn api:app --reload <br>
 OR if you know the port: <br>
 uvicorn api:app --reload --port XXXX <br>
 
