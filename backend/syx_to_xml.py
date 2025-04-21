@@ -88,6 +88,7 @@ def syx_to_xml(syx_file, xml_file):
     # Directory as variable
     output_dir = "xml_output"  # dir name
     os.makedirs(output_dir, exist_ok=True)  # create dir if not exists
+
     # dir path, syx_data initialization
     xml_path = os.path.join(output_dir, xml_file)
     syx_data = syx_file
@@ -120,6 +121,7 @@ def syx_to_xml(syx_file, xml_file):
     num_patches = 32  # DX7 bulk dump always has 32 patches.
     patch_size = 128
 
+    # check patch size
     for i in range(num_patches):
         start = i * patch_size
         end = start + patch_size
@@ -149,12 +151,14 @@ def syx_to_xml(syx_file, xml_file):
 
     # Pretty-print with lxml.
     pretty_xml = etree.tostring(root, pretty_print=True, xml_declaration=True, encoding="UTF-8")
+    
     # XML DIR that was spesified at the start
+    #saves xml to pc
     with open(xml_path, "wb") as f:
         f.write(pretty_xml)
 
     print(f"Converted {syx_data} to {xml_file} with pretty formatting.")
-
+    return pretty_xml
 
 def main():
     if len(sys.argv) < 2:
