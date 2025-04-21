@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from lxml import etree
 from syx_to_xml import syx_to_xml
 
@@ -20,9 +21,10 @@ app.add_middleware(
     allow_headers=["*"],             # Allow all headers
 )
 
-@app.post("/api/uploadfile")
+@app.post("/api/upload_syx_file")
 
 async def upload_syx_file(syxFile: UploadFile = File(...)):
+
     print("Receiving file:", syxFile.filename)
     try:
         print('read file works')
@@ -31,13 +33,16 @@ async def upload_syx_file(syxFile: UploadFile = File(...)):
 
         # Access syx_to_xml.py
         try:
-            syx_to_xml(contents, 'xml_file.xml')
+            # syx_to_xml(contents, 'xml_file.xml')
+
+            # var that takes returned xml
+            xml_file = syx_to_xml(contents, 'xml_file.xml')
+            # send to frontend
+            return Response(content=xml_file, media_type="application/xml")
+
+
         except Exception as e:
             print(f"Error while converting syx to xml: {e}")
-        
-        return JSONResponse(content={
-            "message": "File parsed and converted successfully"
-        })
                 
     except Exception as e:
         return JSONResponse(status_code=400, content={"message": str(e)})
