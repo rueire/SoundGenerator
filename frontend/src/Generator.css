@@ -12,8 +12,16 @@ html {
     background-color: grey;
 }
 
+label {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+
 /*========================================*/
-/*PARAMETER FORM CSS*/
+/*PARAMETER FORM, PARAMETERS CSS*/
 
 .parameter-form {
     align-items: center;
@@ -28,12 +36,13 @@ html {
 }
 
 .basic-parameters-container {
-    align-items: center;
-    justify-content: space-between;
+    /* align-items: center; */
+    text-align: S;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    margin-bottom: 10%;
+    gap: 30px;
+
+    margin-bottom: 20%;
 }
 
 /*========================================*/
@@ -63,3 +72,11 @@ html {
 }
 
 /*========================================*/
+
+/* OPERATOR PARAMS */
+
+.operator-parameters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

@@ -115,6 +115,30 @@ export default function ParameterForm(onSubmit) {
                         <option value={2}>Fixed</option>
                     </select>
                 </div>
+                <div className="output-container">
+                    <label htmlFor="outputlvl">Output Level:</label>
+                    <input
+                        type="range"
+                        name="outputLvl"
+                        min="0"
+                        max="99"
+                        value={params.operatorParams.outputLvl}
+                        onChange={handleOperatorInput}
+                    />
+                    <span>{params.operatorParams.outputLvl}</span> {/* Display current value */}
+                </div>
+                <div className="freqCoarse-container">
+                    <label htmlFor="freqCoarse">Frequency Coarse:</label>
+                    <input
+                        type="range"
+                        name="freqCoarse"
+                        min="0"
+                        max="31"
+                        value={params.operatorParams.freqCoarse}
+                        onChange={handleOperatorInput}
+                    />
+                    <span>{params.operatorParams.freqCoarse}</span> {/* Display current value */}
+                </div>
             </div>
         </form>
     )
