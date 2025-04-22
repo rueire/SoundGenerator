@@ -1,69 +1,125 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import './Generator.css'
-import syxDownload from './assets/syxDownload'
 import ParameterForm from './assets/parameters'
 import SyxUpload from './assets/syxUpload';
 
 function SoundGenerator() {
-
-  const [isGenerating, setIsGenerating] = useState(false); // Track the generation state
-  // const [generatedFile, setGeneratedFile] = useState(null); // Uploaded .syx file
-  const [generatedFile, setGeneratedFile] = useState(null); // Store the generated .syx file
   const [xmlBlob, setXmlBlob] = useState(null); // returned xml
+  const [params, setParams] = useState(null);
 
-  // generated_file downlod handling
-  // should be put to GenerateSound?
-  //doesnt rly work yet since nothing is generated
-  const handleDownload = async() => {
-    console.log("Button2 pressed")
+  // parameter data from parameters.jsx
+  const handleParamsChange = useCallback((data) => {
+    setParams(data);
+  }, []);
 
-    const blob = await syxDownload(); // get blob from backend
-    if (!blob) {
-      console.log('No connection to backend yet!')
-      return; // handle error
+  //dx7 patch OBJECT
+  const generatePatch = () => {
+    if (!params) return alert("No parameters yet!");
+// main parameters
+    const patch = {
+      name: params.name || 'NewPatch',
+      algorithm: params.algorithm,
+      feedback: 10,
+      oscillator_sync: 10,
+      lfo_speed: params.lfoSpeed,
+      lfo_delay: 0,
+      lfo_pm_depth: 0,
+      lfo_am_depth: 0,
+      pitch_mod_sensitivity: 0,
+      lfo_waveform: params.lfoWaveform,
+      lfo_sync: 0,
+      transpose: 24,
+      pitch_eg_rate1: 99,
+      pitch_eg_rate2: 99,
+      pitch_eg_rate3: 99,
+      pitch_eg_rate4: 99,
+      pitch_eg_level1: 99,
+      pitch_eg_level2: 50,
+      pitch_eg_level3: 50,
+      pitch_eg_level4: 0,
+    };
+// operator parameters
+    for (let i = 6; i >= 1; i--) {
+      patch[`operator_${i}`] = {
+        eg_rate1: 99,
+        eg_rate2: 99,
+        eg_rate3: 99,
+        eg_rate4: 99,
+        eg_level1: 99,
+        eg_level2: 75,
+        eg_level3: 50,
+        eg_level4: 0,
+        key_scaling_break: 60,
+        key_scaling_left_depth: 0,
+        key_scaling_right_depth: 0,
+        key_scaling_left_curve: 0,
+        key_scaling_right_curve: 0,
+        oscillator_detune: 0,
+        rate_scaling: 0,
+        key_velocity_sensitivity: 0,
+        amp_mod_sensitivity: 0,
+        output_level: params.operatorParams.outputLvl,
+        frequency_coarse: params.operatorParams.freqCoarse,
+        oscillator_mode: params.operatorParams.oscillatorMode,
+        frequency_fine: 0,
+      };
     }
-    const link = document.createElement('a');
-    
-    // Creates URL for the file that was received as blob,
-    //Will download a file no matter what 
-    link.href = URL.createObjectURL(blob);
-
-    // sets download - attribute to the link,
-    // which tells what name the downloaded file has when user presses download
-    link.download = 'generated_sound.syx';
-    link.click();
+    console.log('Generated Patch:', patch);
+    console.log(typeof (patch));
+    // generating + buttonpress happens here:
+    generateXML(patch);
   }
 
-  // Generate Sound button
-  const GenerateSound = async (params) => {
-      //tämän pitäisi olla nappi, joka lähettää tiedot backendille
-      // jossa luodaan xml, ja muunnetaan .syx tirdostoksi
-      console.log('button1 pressed')
-          try {
-              const response = await fetch('info tähän', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(params),
-              });
+ // Object --> XML download
+  const generateXML = (patch) => {
+    // this needs to match generatePatch!
+    const xmlContent = `
+  <patch>
+    <name>${patch.name}</name>
+    <algorithm>${patch.algorithm}</algorithm>
+    <feedback>${patch.feedback}</feedback>
+    <oscillator_sync>${patch.oscillator_sync}</oscillator_sync>
+    <lfo_speed>${patch.lfo_speed}</lfo_speed>
+    <lfo_delay>${patch.lfo_delay}</lfo_delay>
+    <lfo_am_depth>${patch.lfo_am_depth}<lfo_am_depth>
+    <lfo_pm_depth>${patch.lfo_pm_depth}<lfo_pm_depth>
+    <pitch_mod_sensitivity>${patch.pitch_mod_sensitivity}</pitch_mod_sensitivity>
+    <lfo_waveform>${patch.lfo_waveform}</lfo_waveform>
+    <lfo_sync>${patch.lfo_sync}</lfo_sync>
+    <transpose>${patch.transpose}</transpose>
+    <pitch_eg_rate1>${patch.pitch_eg_ratel}</pitch_eg_rate1>
+    <pitch_eg_rate2>${patch.pitch_eg_rate2}</pitch_eg_rate2>
+    <pitch_eg_rate3>${patch.pitch_eg_rate3}</pitch_eg_rate3>
+    <pitch_eg_rate4>${patch.pitch_eg_rate4}</pitch_eg_rate4>
+    <pitch_eg_level1>${patch.pitch_eg_level1}</pitch_eg_level1>
+    <pitch_eg_level2>${patch.pitch_eg_level2}</pitch_eg_level2>
+    <pitch_eg_level3>${patch.pitch_eg_level3}</pitch_eg_level3>
+    <pitch_eg_level4>${patch.pitch_eg_level4}</pitch_eg_level4>
+    ${[6,5,4,3,2,1].map(i => {
+      const op = patch[`operator_${i}`]; 
+      return `
+      <operator id="${i}">
+        <output_level>${op?.output_level ?? 0}</output_level>
+        <frequency_coarse>${op?.frequency_coarse ?? 0}</frequency_coarse>
+        <oscillator_mode>${op?.oscillator_mode ?? 0}</oscillator_mode>
+      </operator>
+      `;
+    }).join('')}
+  </patch>
+  `.trim();
 
-              if (!response.ok) {
-                  throw new Error('Failed to generate')
-              }
-              const blob = await response.blob();
-            setGeneratedFile(blob); // Save the generated file to the state
-            setIsGenerating(false); // File generation is complete
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'generated_patch.syx';
-              a.click();
-          } catch (error) {
-              console.error('Error:', error);
-            setIsGenerating(false);
-          }
-      }
-  
-  // take file from user
+    //Download file
+    const blob = new Blob([xmlContent], { type: "application/xml" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = 'patch.xml'; // File name
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // take syx file from user, receive xml
   const Uploadfile = async(file) => {
     console.log("Upload button pressed")
     
@@ -89,7 +145,7 @@ function SoundGenerator() {
       console.error("Error:", error);
     }
   }
-  // XML button onClick
+  // download user's XML onClick
   const XmlDownload = () => {
     if (xmlBlob) {
       const url = URL.createObjectURL(xmlBlob);
@@ -101,27 +157,23 @@ function SoundGenerator() {
     }
   }
 
-
   return (
     <>
     <div className='parameter_form'>
-      <ParameterForm onSubmit={ParameterForm} />
+      <ParameterForm onChange={handleParamsChange} />
       </div>
       <div className='upload_form'>
         <SyxUpload onFileUpload={Uploadfile} />
+      </div>
+      <div className='buttons_container'>
+        {/* <button className='upload_btn'>Upload file</button> */}
         {/* Display download button only if XML is available */}
         {xmlBlob && (
           <button onClick={XmlDownload} className="download-button">
             Download XML
           </button>
         )}
-      </div>
-      <div className='buttons_container'>
-        {/* <button className='upload_btn'>Upload file</button> */}
-        <button className='generate_btn' onClick={GenerateSound}>Generate Sound</button>
-        {generatedFile && (<button onClick={handleDownload} disabled={isGenerating}>
-          Download File
-        </button>)}
+        <button className='generate_btn' onClick={generatePatch}>Generate Sound</button>
       </div>
     </>
   )

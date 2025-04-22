@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function ParameterForm(onSubmit) {
+export default function ParameterForm({ onChange }) {
+    // const [lfoWaveform, setLfoWaveform] = useState(0);
 
     //These params are taken from user
     const [params, setParams] = useState ({
@@ -13,12 +14,6 @@ export default function ParameterForm(onSubmit) {
             freqCoarse: 20,
         }
     });
-
-    const [lfoWaveform, setLfoWaveform] = useState(0);
-
-    const handleLfoChange = (e) => {
-        setLfoWaveform(Number(e.target.value));
-    }
 
     //Handle basic Parameters
     const handleInput = (e) => {
@@ -40,13 +35,13 @@ export default function ParameterForm(onSubmit) {
         }));
     };
 
-    //Generate Sound Button press
-    const handleGenerateSound = (e) => {
-        e.preventDefault();
-        onSubmit(params);
-    };
+    // keep up w/parameter changes
+    useEffect(() => {
+        onChange(params);
+    }, [params, onChange]);
 
-    //For Loop for algorithm
+
+    //For Loop for algorithm options
     const algorithmOptions = [];
     for (let i = 1; i <= 32; i++) {
         algorithmOptions.push(
@@ -57,7 +52,7 @@ export default function ParameterForm(onSubmit) {
     };
 
     return (
-        <form onSubmit={handleGenerateSound} className="parameter-form">
+        <form className="parameter-form">
             <div className="basic-parameters-container">
                 <div className="algoritm-container">
                     <label htmlFor="algorithm">Algorithm:</label>
@@ -77,8 +72,8 @@ export default function ParameterForm(onSubmit) {
                         min="1"
                         max="5"
                         step="1"
-                        value={lfoWaveform}
-                        onChange={handleLfoChange}
+                        value={params.lfoWaveform}
+                        onChange={handleInput}
                         className="lfo-slider"
                     />
                     <div className="slider-values">
