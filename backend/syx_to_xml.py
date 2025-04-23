@@ -28,8 +28,8 @@ def parse_dx7_patch(data):
         "lfo_pm_depth": data[114],
         "lfo_am_depth": data[115],
         # Byte 116: LPMS (bits 5–7), LFW (bits 1–4), LKS (bit 0).
-        "pitch_mod_sensitivity": (data[116] >> 5) & 0b111,  # bits 5–7 → 0–7
-        "lfo_waveform": (data[116] >> 1) & 0b1111,   # bits 1–4 → 0–5 used
+        "pitch_mod_sensitivity": (data[116] >> 4) & 0b00000111,  # bits 6-4. Range: 0–7
+        "lfo_waveform": (data[116] >> 1) & 0b00000111,   # bits 1–4 → 0–5 used
         "lfo_sync": data[116] & 0b1,    # bit 0
         "transpose": data[117],
         "pitch_eg_rate1": data[102],
@@ -91,27 +91,27 @@ def syx_to_xml(syx_file, xml_file):
 
     # dir path, syx_data initialization
     xml_path = os.path.join(output_dir, xml_file)
-    syx_data = syx_file
+    full_syx_data = syx_file
 
     # Checks if the header is in correct form.
-    if syx_data[:6] != b'\xF0\x43\x00\x09\x20\x00':
+    if full_syx_data[:6] != b'\xF0\x43\x00\x09\x20\x00':
         raise ValueError("Invalid Sysex header: Expected Yamaha DX7 bulk header")
 
     # Checks if the syx file ends in a correct byte.
-    if syx_data[-1] != 0xF7:
-        print(f"Sysex file {syx_file} does not end with 0xF7. Found instead: {hex(syx_data[-1])}")
+    if full_syx_data[-1] != 0xF7:
+        print(f"Sysex file {syx_file} does not end with 0xF7. Found instead: {hex(full_syx_data[-1])}")
     else:
-        print(f"Last byte of the file is correct: {hex(syx_data[-1])}")
+        print(f"Last byte of the file is correct: {hex(full_syx_data[-1])}")
 
     # Extracts just the patch data (assume 6-byte header + 4096 bytes data).
     patch_data_start = 6
     patch_data_end = patch_data_start + 4096
 
     # Checks the length of the syx file.
-    if len(syx_data) < patch_data_end:
-        raise ValueError(f"File too short to contain 32 patches: {len(syx_data)} bytes")
+    if len(full_syx_data) < patch_data_end:
+        raise ValueError(f"File too short to contain 32 patches: {len(full_syx_data)} bytes")
 
-    syx_data = syx_data[patch_data_start:patch_data_end]  # Trims anything after 4096 bytes (if there is).
+    syx_data = full_syx_data[patch_data_start:patch_data_end]  # Trims anything after 4096 bytes (if there is).
 
     print("Header bytes:", syx_data[:6])
     print("First patch starts at:", syx_data[6:14])
