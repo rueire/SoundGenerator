@@ -109,6 +109,116 @@ def analyze_lfo_speed(df, filename):
     plt.tight_layout()
     plt.show()
 
+def analyze_feedback(df, filename):
+    feedback_counts = df['feedback'].value_counts().sort_index()
+    plt.figure(figsize=(8, 6))
+    feedback_counts.plot(kind='bar', color='lightcoral', edgecolor='black')
+    plt.title("Feedback amount distribution")
+    plt.xlabel("Feedback (0–7)")
+    plt.ylabel("Number of patches")
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_lfo_delay(df, filename):
+    delay = df['lfo_delay'].dropna().astype(int)
+    delay_counts = delay.value_counts().sort_index()
+    plt.figure(figsize=(12, 6))
+    delay_counts.plot(kind='bar', color='mediumslateblue', edgecolor='black')
+    plt.title("LFO delay time")
+    plt.xlabel("LFO delay (0–99)")
+    plt.ylabel("Number of patches")
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_pitch_mod_sensitivity(df, filename):
+    pms_counts = df['pitch_mod_sensitivity'].value_counts().sort_index()
+    plt.figure(figsize=(8, 6))
+    pms_counts.plot(kind='bar', color='seagreen', edgecolor='black')
+    plt.title("Pitch modulation sensitivity")
+    plt.xlabel("Sensitivity (0–7)")
+    plt.ylabel("Number of patches")
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_lfo_pm_depth(df, filename):
+    pm = df['lfo_pm_depth'].dropna().astype(int)
+    pm_counts = pm.value_counts().sort_index()
+    plt.figure(figsize=(12, 6))
+    pm_counts.plot(kind='bar', color='dodgerblue', edgecolor='black')
+    plt.title("LFO pitch modulation depth")
+    plt.xlabel("PM depth (0–99)")
+    plt.ylabel("Number of patches")
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_lfo_am_depth(df, filename):
+    am = df['lfo_am_depth'].dropna().astype(int)
+    am_counts = am.value_counts().sort_index()
+    plt.figure(figsize=(12, 6))
+    am_counts.plot(kind='bar', color='darkorange', edgecolor='black')
+    plt.title("LFO amplitude modulation depth")
+    plt.xlabel("AM depth (0–99)")
+    plt.ylabel("Number of patches")
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_pitch_eg_rates(df, filename):
+    plt.figure(figsize=(18, 6))
+    bin_edges = np.arange(0, 101)
+
+    for i in range(1, 5):
+        col = f'pitch_eg_rate{i}'
+        if col in df.columns:
+            data = df[col].dropna().astype(int)
+            plt.hist(data, bins=bin_edges, alpha=0.5, label=f'Rate {i}')
+            print(f"\nPitch EG rate {i}:")
+            counts = data.value_counts().sort_index()
+            for val, count in counts.items():
+                print(f"{val}: {count:,}")
+        else:
+            print(f"Missing column: {col}")
+
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    plt.xticks(bin_centers, [str(i) for i in range(0, 100)])
+    plt.title("Pitch envelope generator rates")
+    plt.xlabel("Rate value (0–99)")
+    plt.ylabel("Number of patches")
+    plt.legend()
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
+def analyze_pitch_eg_levels(df, filename):
+    plt.figure(figsize=(18, 6))
+    bin_edges = np.arange(0, 101)
+
+    for i in range(1, 5):
+        col = f'pitch_eg_level{i}'
+        if col in df.columns:
+            data = df[col].dropna().astype(int)
+            plt.hist(data, bins=bin_edges, alpha=0.5, label=f'Level {i}')
+            print(f"\nPitch EG level {i}:")
+            counts = data.value_counts().sort_index()
+            for val, count in counts.items():
+                print(f"{val}: {count:,}")
+        else:
+            print(f"Missing column: {col}")
+
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    plt.xticks(bin_centers, [str(i) for i in range(0, 100)])
+    plt.title("Pitch envelope generator levels")
+    plt.xlabel("Level value (0–99)")
+    plt.ylabel("Number of patches")
+    plt.legend()
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
 # General function for analyzing any operator-level parameter.
 def analyze_operator_param(df, param_suffix, title, xlabel, bins=None, per_operator=False):
     # Chooses default bins based on the parameter type, if not provided.
@@ -220,9 +330,16 @@ def menu(df, filename):
         print("10. Oscillator mode per operator")
         print("11. Frequency coarse distribution (all operators)")
         print("12. Frequency coarse per operator")
+        print("13. Feedback level")
+        print("14. LFO delay")
+        print("15. Pitch modulation sensitivity")
+        print("16. LFO pitch modulation depth")
+        print("17. LFO amplitude modulation depth")
+        print("18. Pitch EG Rates (1–4)")
+        print("19. Pitch EG Levels (1–4)")
         print("0. Exit")
 
-        choice = input("Enter choice (1–12), 0 for exit: ").strip()
+        choice = input("Enter choice (1–19), 0 for exit: ").strip()
 
         if choice == '1':
             analyze_algorithm_distribution(df, filename)
@@ -248,6 +365,20 @@ def menu(df, filename):
             analyze_operator_param(df, "frequency_coarse", "Coarse frequency usage", "Coarse frequency (0–31)")
         elif choice == '12':
             analyze_operator_param(df, "frequency_coarse", "Coarse frequency usage", "Coarse frequency (0–31)", per_operator=True)
+        elif choice == '13':
+            analyze_feedback(df, filename)
+        elif choice == '14':
+            analyze_lfo_delay(df, filename)
+        elif choice == '15':
+            analyze_pitch_mod_sensitivity(df, filename)
+        elif choice == '16':
+            analyze_lfo_pm_depth(df, filename)
+        elif choice == '17':
+            analyze_lfo_am_depth(df, filename)
+        elif choice == '18':
+            analyze_pitch_eg_rates(df, filename)
+        elif choice == '19':
+            analyze_pitch_eg_levels(df, filename)
         elif choice == '0':
             print("Exiting...")
             break
