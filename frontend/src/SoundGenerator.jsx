@@ -99,9 +99,27 @@ function SoundGenerator() {
       const op = patch[`operator_${i}`]; 
       return `
       <operator id="${i}">
+        <eg_rate1>${op?.eg_rate1 ?? 0}</eg_rate1>
+        <eg_rate2>${op?.eg_rate2 ?? 0}</eg_rate2>
+        <eg_rate3>${op?.eg_rate3 ?? 0}</eg_rate3>
+        <eg_rate4>${op?.eg_rate4 ?? 0}</eg_rate4>
+        <eg_level11>${op?.eg_level1 ?? 0}</eg_level11>
+        <eg_level12>${op?.eg_level2 ?? 0}</eg_level12>
+        <eg_level13>${op?.eg_level3 ?? 0}</eg_level13>
+        <eg_level14>${op?.eg_level4 ?? 0}</eg_level14>
+        <key_scaling_break>${op?.key_scaling_break ?? 0}</key_scaling_break>
+        <key_scaling_left_depth>${op?.key_scaling_left_depth ?? 0}</key_scaling_left_depth>
+        <key_scaling_right_depth>${op?.key_scaling_right_depth ?? 0}</key_scaling_right_depthk>
+        <key_scaling_left_curve>${op?.key_scaling_left_curve ?? 0}</key_scaling_left_curve>
+        <key_scaling_right_curve>${op?.key_scaling_right_curve ?? 0}</key_scaling_right_curve>
+        <oscillator_detune>${op?.oscillator_detune ?? 0}</oscillator_detune>
+        <rate_scaling>${op?.rate_scaling ?? 0}</rate_scaling>
+        <key_velocity_sensitivity>${op?.key_velocity_sensitivity ?? 0}</key_velocity_sensitivity>
+        <amp_mod_sensitivity>${op?.amp_mod_sensitivity ?? 0}</amp_mod_sensitivity>
         <output_level>${op?.output_level ?? 0}</output_level>
         <frequency_coarse>${op?.frequency_coarse ?? 0}</frequency_coarse>
         <oscillator_mode>${op?.oscillator_mode ?? 0}</oscillator_mode>
+        <frequency_fine>${op?.frequency_fine ?? 0}</frequency_fine>
       </operator>
       `;
     }).join('')}
