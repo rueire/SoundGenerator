@@ -14,8 +14,9 @@ function SoundGenerator() {
 
   //dx7 patch OBJECT
   const generatePatch = () => {
+
     if (!params) return alert("No parameters yet!");
-// main parameters
+    // main parameters
     const patch = {
       name: params.name || 'NewPatch',
       algorithm: params.algorithm,
@@ -29,7 +30,7 @@ function SoundGenerator() {
       lfo_waveform: params.lfoWaveform,
       lfo_sync: 0,
       transpose: 24,
-      pitch_eg_rate1: 99,
+      pitch_eg_rate1: 89,
       pitch_eg_rate2: 99,
       pitch_eg_rate3: 99,
       pitch_eg_rate4: 99,
@@ -38,9 +39,11 @@ function SoundGenerator() {
       pitch_eg_level3: 50,
       pitch_eg_level4: 0,
     };
-// operator parameters
-    for (let i = 6; i >= 1; i--) {
-      patch[`operator_${i}`] = {
+    // operator parameters
+    const operatorParams = [];
+    for (let i = 0; i < 6; i++) {
+      const op = params.operatorParams[i];
+      const operator = {
         eg_rate1: 99,
         eg_rate2: 99,
         eg_rate3: 99,
@@ -58,14 +61,23 @@ function SoundGenerator() {
         rate_scaling: 0,
         key_velocity_sensitivity: 0,
         amp_mod_sensitivity: 0,
-        output_level: params.operatorParams.outputLvl,
-        frequency_coarse: params.operatorParams.freqCoarse,
-        oscillator_mode: params.operatorParams.oscillatorMode,
+        output_level: op.outputLvl,
+        frequency_coarse: op.freqCoarse,
+        oscillator_mode: op.oscillatorMode,
         frequency_fine: 0,
       };
+      operatorParams.push(operator);
+      //debug:
+      // console.log(op.freqCoarse);
+      // console.log(op.outputLvl);
+      // console.log(op.oscillatorMode);
     }
     console.log('Generated Patch:', patch);
     console.log(typeof (patch));
+
+    // Add operatorParams to the patch
+    patch.operatorParams = operatorParams;
+
     // generating + buttonpress happens here:
     generateXML(patch);
   }
@@ -81,13 +93,13 @@ function SoundGenerator() {
     <oscillator_sync>${patch.oscillator_sync}</oscillator_sync>
     <lfo_speed>${patch.lfo_speed}</lfo_speed>
     <lfo_delay>${patch.lfo_delay}</lfo_delay>
-    <lfo_am_depth>${patch.lfo_am_depth}<lfo_am_depth>
-    <lfo_pm_depth>${patch.lfo_pm_depth}<lfo_pm_depth>
+    <lfo_am_depth>${patch.lfo_am_depth}</lfo_am_depth>
+    <lfo_pm_depth>${patch.lfo_pm_depth}</lfo_pm_depth>
     <pitch_mod_sensitivity>${patch.pitch_mod_sensitivity}</pitch_mod_sensitivity>
     <lfo_waveform>${patch.lfo_waveform}</lfo_waveform>
     <lfo_sync>${patch.lfo_sync}</lfo_sync>
     <transpose>${patch.transpose}</transpose>
-    <pitch_eg_rate1>${patch.pitch_eg_ratel}</pitch_eg_rate1>
+    <pitch_eg_rate1>${patch.pitch_eg_rate1}</pitch_eg_rate1>
     <pitch_eg_rate2>${patch.pitch_eg_rate2}</pitch_eg_rate2>
     <pitch_eg_rate3>${patch.pitch_eg_rate3}</pitch_eg_rate3>
     <pitch_eg_rate4>${patch.pitch_eg_rate4}</pitch_eg_rate4>
@@ -95,10 +107,10 @@ function SoundGenerator() {
     <pitch_eg_level2>${patch.pitch_eg_level2}</pitch_eg_level2>
     <pitch_eg_level3>${patch.pitch_eg_level3}</pitch_eg_level3>
     <pitch_eg_level4>${patch.pitch_eg_level4}</pitch_eg_level4>
-    ${[6,5,4,3,2,1].map(i => {
-      const op = patch[`operator_${i}`]; 
+    ${[5,4,3,2,1,0].map(i => {
+      const op = patch.operatorParams[i]; 
       return `
-      <operator id="${i}">
+      <operator id="${6 - i}">
         <eg_rate1>${op?.eg_rate1 ?? 0}</eg_rate1>
         <eg_rate2>${op?.eg_rate2 ?? 0}</eg_rate2>
         <eg_rate3>${op?.eg_rate3 ?? 0}</eg_rate3>
