@@ -24,25 +24,24 @@ label {
 /*PARAMETER FORM, PARAMETERS CSS*/
 
 .parameter-form {
+    max-width: 60%;
+
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 
-    padding: 10%;
+    padding: 5%;
     margin: 0%;
     background-color: bisque;
 }
 
 .basic-parameters-container {
-    /* align-items: center; */
-    text-align: S;
+    text-align: center;
     display: flex;
     flex-direction: row;
     gap: 30px;
-
-    margin-bottom: 20%;
 }
 
 /*========================================*/
@@ -78,5 +77,10 @@ label {
 .operator-parameters-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+    padding: 10px;
+
+    border: solid 2px;
+    border-radius: 10%;
+
 }
