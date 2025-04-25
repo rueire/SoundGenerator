@@ -337,9 +337,17 @@ def menu(df, filename):
         print("17. LFO amplitude modulation depth")
         print("18. Pitch EG Rates (1–4)")
         print("19. Pitch EG Levels (1–4)")
+        print("20. EG rate 1-4")
+        print("21. EG level 1-4")
+        print("22. Key scaling parameters (per operator)")
+        print("23. Oscillator detune (per operator)")
+        print("24. Rate scaling (per operator)")
+        print("25. Key velocity sensitivity (per operator)")
+        print("26. Amplitude modulation sensitivity (per operator)")
+        print("27. Fine frequency tuning (per operator)")
         print("0. Exit")
 
-        choice = input("Enter choice (1–19), 0 for exit: ").strip()
+        choice = input("Enter choice (1–21), 0 for exit: ").strip()
 
         if choice == '1':
             analyze_algorithm_distribution(df, filename)
@@ -379,6 +387,89 @@ def menu(df, filename):
             analyze_pitch_eg_rates(df, filename)
         elif choice == '19':
             analyze_pitch_eg_levels(df, filename)
+        elif choice == "20":
+            for i in range(1, 5):
+                analyze_operator_param(
+                    df,
+                    param_suffix=f"eg_rate{i}",
+                    title=f"Envelope Generator Rate {i}",
+                    xlabel=f"EG Rate {i} value (0–99)",
+                    bins=np.arange(0, 101),
+                    per_operator=True  # or False for a combined chart
+                )
+        elif choice == "21":
+            for i in range(1, 5):
+                analyze_operator_param(
+                    df,
+                    param_suffix=f"eg_level{i}",
+                    title=f"Envelope Generator Level {i}",
+                    xlabel=f"EG Level {i} value (0–99)",
+                    bins=np.arange(0, 101),
+                    per_operator=True
+                )
+        elif choice == "22":
+            key_scaling_params = [
+                ("key_scaling_break",        "Key scaling break point",        "Break point (0–99)", np.arange(0, 101)),
+                ("key_scaling_left_depth",   "Key scaling left depth",         "Left depth (0–99)", np.arange(0, 101)),
+                ("key_scaling_right_depth",  "Key scaling right depth",        "Right depth (0–99)", np.arange(0, 101)),
+                ("key_scaling_left_curve",   "Key scaling left curve type",    "Left curve (0–3)", np.arange(0, 5)),
+                ("key_scaling_right_curve",  "Key scaling right curve type",   "Right curve (0–3)", np.arange(0, 5)),
+            ]
+
+            for param_suffix, title, xlabel, bins in key_scaling_params:
+                analyze_operator_param(
+                    df,
+                    param_suffix=param_suffix,
+                    title=title,
+                    xlabel=xlabel,
+                    bins=bins,
+                    per_operator=True
+                )
+        elif choice == "23":
+            analyze_operator_param(
+                df,
+                param_suffix="oscillator_detune",
+                title="Oscillator detune",
+                xlabel="Detune (0–14, where 7 is default)",
+                bins=np.arange(0, 16),
+                per_operator=True
+            )
+        elif choice == "24":
+            analyze_operator_param(
+                df,
+                param_suffix="rate_scaling",
+                title="Rate scaling",
+                xlabel="Rate scaling (0–7)",
+                bins=np.arange(0, 9),
+                per_operator=True
+            )
+        elif choice == "25":
+            analyze_operator_param(
+                df,
+                param_suffix="key_velocity_sensitivity",
+                title="Key velocity sensitivity",
+                xlabel="Velocity sensitivity (0–7)",
+                bins=np.arange(0, 9),
+                per_operator=True
+            )
+        elif choice == "26":
+            analyze_operator_param(
+                df,
+                param_suffix="amp_mod_sensitivity",
+                title="Amplitude modulation sensitivity",
+                xlabel="AM sensitivity (0–3)",
+                bins=np.arange(0, 5),
+                per_operator=True
+            )
+        elif choice == "27":
+            analyze_operator_param(
+                df,
+                param_suffix="frequency_fine",
+                title="Fine frequency tuning",
+                xlabel="Fine frequency (0–99)",
+                bins=np.arange(0, 101),
+                per_operator=True
+            )
         elif choice == '0':
             print("Exiting...")
             break
