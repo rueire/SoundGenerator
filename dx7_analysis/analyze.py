@@ -314,6 +314,61 @@ def analyze_operator_param(df, param_suffix, title, xlabel, bins=None, per_opera
         plt.tight_layout()
         plt.show()
 
+def draw_eg_curve(levels, label=None):
+    # Draws a simple 4-stage EG shape using DX7 EG levels (1-4).
+    times = [0, 1, 2, 3, 4]
+    points = [levels[0], levels[1], levels[2], levels[3], 0]  # End at level 0 for decay
+    plt.plot(times, points, marker='o', label=label)
+
+def plot_average_eg_curve_per_algorithm(df):
+    plt.figure(figsize=(12, 8))
+
+    for alg in sorted(df["algorithm"].unique()):
+        subset = df[df["algorithm"] == alg]
+
+        avg_levels = [
+            subset["operator_1_eg_level1"].mean(),
+            subset["operator_1_eg_level2"].mean(),
+            subset["operator_1_eg_level3"].mean(),
+            subset["operator_1_eg_level4"].mean()
+        ]
+
+        draw_eg_curve(avg_levels, label=f"Algorithm {alg}")
+
+    plt.title("Average EG shape per algorithm (Operator 1)")
+    plt.xlabel("Stage (attack → decay → sustain → release)")
+    plt.ylabel("Level 0-99")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+def draw_all_operator_eg_curves_per_algorithm(df):
+    # Draws EG curves for all 6 operators separately, grouped by algorithm.
+    algorithms = sorted(df["algorithm"].unique())
+
+    for alg in algorithms:
+        subset = df[df["algorithm"] == alg]
+        plt.figure(figsize=(14, 8))
+
+        for op in range(1, 7):
+            avg_levels = [
+                subset[f"operator_{op}_eg_level1"].mean(),
+                subset[f"operator_{op}_eg_level2"].mean(),
+                subset[f"operator_{op}_eg_level3"].mean(),
+                subset[f"operator_{op}_eg_level4"].mean()
+            ]
+
+            draw_eg_curve(avg_levels, label=f"Operator {op}")
+
+        plt.title(f"Average EG curves for all operators - Algorithm {alg}")
+        plt.xlabel("Stage (attack → decay → sustain → release)")
+        plt.ylabel("Level 0–99")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
 # Displays the main menu and routes user's choice.
 def menu(df, filename):
     while True:
@@ -345,9 +400,11 @@ def menu(df, filename):
         print("25. Key velocity sensitivity (per operator)")
         print("26. Amplitude modulation sensitivity (per operator)")
         print("27. Fine frequency tuning (per operator)")
+        print("28: Draw average EG curve per algorithm (Operator 1)")
+        print("29: Draw average EG curves for all 6 operators per algorithm")
         print("0. Exit")
 
-        choice = input("Enter choice (1–21), 0 for exit: ").strip()
+        choice = input("Enter choice (1–27), 0 for exit: ").strip()
 
         if choice == '1':
             analyze_algorithm_distribution(df, filename)
@@ -470,6 +527,10 @@ def menu(df, filename):
                 bins=np.arange(0, 101),
                 per_operator=True
             )
+        elif choice == "28":
+            plot_average_eg_curve_per_algorithm(df)
+        elif choice == "29":
+            draw_all_operator_eg_curves_per_algorithm(df)
         elif choice == '0':
             print("Exiting...")
             break
