@@ -57,7 +57,7 @@ export default function generateSyx(patch) {
 
         // Operator data
         for (let i = 0; i < 6; i++) {
-            const op = currentPatch.operatorParams[i];
+            const op = currentPatch.operatorParams[5 - i];
             const base = index * 128 + (5 - i) * 17; // Begins writing from operator 6-> op1.
 
             // Set operator parameters
@@ -74,11 +74,17 @@ export default function generateSyx(patch) {
             cartridge[base + 8] = op.key_scaling_break;
             cartridge[base + 9] = op.key_scaling_left_depth;
             cartridge[base + 10] = op.key_scaling_right_depth;
-            cartridge[base + 11] = (op.key_scaling_left_curve & 0x03) | ((op.key_scaling_right_curve & 0x03) << 2);
-            cartridge[base + 12] = ((op.oscillator_detune & 0x1f) << 3) | (op.rate_scaling & 0x07);
-            cartridge[base + 13] = ((op.key_velocity_sensitivity & 0x07) << 2) | (op.amp_mod_sensitivity & 0x03);
+            cartridge[base + 11] =
+                (op.key_scaling_left_curve & 0x03) |
+                ((op.key_scaling_right_curve & 0x03) << 2);
+            cartridge[base + 12] =
+                ((op.oscillator_detune & 0x1f) << 3) | (op.rate_scaling & 0x07);
+            cartridge[base + 13] =
+                ((op.key_velocity_sensitivity & 0x07) << 2) |
+                (op.amp_mod_sensitivity & 0x03);
             cartridge[base + 14] = op.output_level;
-            cartridge[base + 15] = ((op.frequency_coarse & 0x1f) << 1) | (op.oscillator_mode & 0x01);
+            cartridge[base + 15] =
+                ((op.frequency_coarse & 0x1f) << 1) | (op.oscillator_mode & 0x01);
             cartridge[base + 16] = op.frequency_fine;
         }
 
@@ -95,18 +101,21 @@ export default function generateSyx(patch) {
         cartridge[base + 108] = currentPatch.pitch_eg_level3;
         cartridge[base + 109] = currentPatch.pitch_eg_level4;
 
-        cartridge[base + 110] = currentPatch.algorithm & 0x1f;
+        cartridge[base + 110] = (currentPatch.algorithm - 1) & 0x1f;
         // Feedback is in bits 0–2, oscillator key sync is bit 3 of byte 111.
-        cartridge[base + 111] = (currentPatch.feedback & 0x07) | ((currentPatch.oscillator_sync & 0x01) << 3);
+        cartridge[base + 111] =
+            (currentPatch.feedback & 0x07) |
+            ((currentPatch.oscillator_sync & 0x01) << 3);
 
         cartridge[base + 112] = currentPatch.lfo_speed;
         cartridge[base + 113] = currentPatch.lfo_delay;
         cartridge[base + 114] = currentPatch.lfo_pm_depth;
         cartridge[base + 115] = currentPatch.lfo_am_depth;
         // Byte 116: is in order 76543210. Pitch mod sensitivity (bits 6-4), lfo waveform (bits 3-1), lfo sync (bit 0).
-        cartridge[base + 116] = ((currentPatch.pitch_mod_sensitivity & 0x07) << 4)
-            | ((currentPatch.lfo_waveform & 0x07) << 1)
-            | (currentPatch.lfo_sync & 0x01);
+        cartridge[base + 116] =
+            ((currentPatch.pitch_mod_sensitivity & 0x07) << 4) |
+            ((currentPatch.lfo_waveform & 0x07) << 1) |
+            (currentPatch.lfo_sync & 0x01);
 
         cartridge[base + 117] = currentPatch.transpose;
 
@@ -115,15 +124,18 @@ export default function generateSyx(patch) {
             .padEnd(10, " ")
             .slice(0, 10)
             .toUpperCase();
-        for (let i = 0; i < 10; i++) {
-            cartridge[base + 118 + i] = name.charCodeAt(i);
+        for (let j = 0; j < 10; j++) {
+            cartridge[base + 118 + j] = name.charCodeAt(j);
         }
     }
 
+    const sum = cartridge.reduce((acc, byte) => acc + (byte & 0x7f), 0);
+    const checksum = (128 - (sum % 128)) % 128;
+
     // Wrap the entire cartridge in a valid SysEx format
     function wrapInSysEx(cartridge) {
-        const header = [0xf0, 0x43, 0x00, 0x09, 0x20]; // Yamaha bulk dump (32 patches)
-        return Uint8Array.from([...header, ...cartridge, 0xf7]);
+        const header = [0xf0, 0x43, 0x00, 0x09, 0x20, 0x00]; // Yamaha bulk dump (32 patches)
+        return Uint8Array.from([...header, ...cartridge, checksum, 0xf7]);
     }
 
     // Generate the SysEx data
