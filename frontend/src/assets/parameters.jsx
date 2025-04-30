@@ -14,7 +14,7 @@ export default function ParameterForm({ onChange }) {
             output_level: 80, // 0-99
             rateScaling: 2, // 0-7
             eg_rate1: 1, // 0-99
-            eg_rate2: 1, // 0-99
+            eg_rate4: 1, // 0-99
         }))
     });
 
@@ -153,17 +153,17 @@ export default function ParameterForm({ onChange }) {
                                 />
                                 <span>{op.eg_rate1}</span> {/* Display current value */}
                             </div>
-                            <div className="eg_rate2-container">
-                                <label htmlFor="eg_rate2">EG rate2:</label>
+                            <div className="eg_rate4-container">
+                                <label htmlFor="eg_rate4">EG rate2:</label>
                                 <input
                                     type="range"
-                                    name="eg_rate2"
+                                    name="eg_rate4"
                                     min="0"
                                     max="99"
-                                    value={op.eg_rate2}
+                                    value={op.eg_rate4}
                                     onChange={(e) => handleOperatorInput(index, e)}
                                 />
-                                <span>{op.eg_rate2}</span> {/* Display current value */}
+                                <span>{op.eg_rate4}</span> {/* Display current value */}
                             </div>
                         </div>
                     </div>

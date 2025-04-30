@@ -40,9 +40,9 @@ function SoundGenerator() {
       operatorParams: [
         {
           eg_rate1: params.operatorParams[5]?.eg_rate1 ?? 49,
-          eg_rate2: params.operatorParams[5]?.eg_rate2 ?? 99,
+          eg_rate2: 99,
           eg_rate3: 28,
-          eg_rate4: 68,
+          eg_rate4: params.operatorParams[5]?.eg_rate4 ?? 68,
           eg_level1: 98,
           eg_level2: 98,
           eg_level3: 91,
@@ -64,9 +64,9 @@ function SoundGenerator() {
 
         {
           eg_rate1: params.operatorParams[4]?.eg_rate1 ?? 77,
-          eg_rate2: params.operatorParams[4]?.eg_rate2 ?? 36,
+          eg_rate2: 36,
           eg_rate3: 41,
-          eg_rate4: 71,
+          eg_rate4: params.operatorParams[4]?.eg_rate4 ?? 71,
           eg_level1: 99,
           eg_level2: 98,
           eg_level3: 98,
@@ -88,9 +88,9 @@ function SoundGenerator() {
 
         {
           eg_rate1: params.operatorParams[3]?.eg_rate1 ?? 77,
-          eg_rate2: params.operatorParams[3]?.eg_rate2 ?? 36,
+          eg_rate2: 36,
           eg_rate3: 41,
-          eg_rate4: 71,
+          eg_rate4: params.operatorParams[3]?.eg_rate4 ?? 71,
           eg_level1: 99,
           eg_level2: 98,
           eg_level3: 98,
@@ -112,9 +112,9 @@ function SoundGenerator() {
 
         {
           eg_rate1: params.operatorParams[2]?.eg_rate1 ?? 77,
-          eg_rate2: params.operatorParams[2]?.eg_rate2 ?? 76,
+          eg_rate2: 76,
           eg_rate3: 82,
-          eg_rate4: 71,
+          eg_rate4: params.operatorParams[2]?.eg_rate4 ?? 71,
           eg_level1: 99,
           eg_level2: 98,
           eg_level3: 98,
@@ -136,9 +136,9 @@ function SoundGenerator() {
 
         {
           eg_rate1: params.operatorParams[1]?.eg_rate1 ?? 62,
-          eg_rate2: params.operatorParams[1]?.eg_rate2 ?? 51,
+          eg_rate2: 51,
           eg_rate3: 29,
-          eg_rate4: 71,
+          eg_rate4: params.operatorParams[1]?.eg_rate4 ?? 71,
           eg_level1: 82,
           eg_level2: 95,
           eg_level3: 96,
@@ -159,9 +159,9 @@ function SoundGenerator() {
         },
         {
           eg_rate1: params.operatorParams[0]?.eg_rate1 ?? 72,
-          eg_rate2: params.operatorParams[0]?.eg_rate2 ?? 76,
+          eg_rate2: 76,
           eg_rate3: 99,
-          eg_rate4: 71,
+          eg_rate4: params.operatorParams[0]?.eg_rate4 ?? 71,
           eg_level1: 99,
           eg_level2: 88,
           eg_level3: 96,
