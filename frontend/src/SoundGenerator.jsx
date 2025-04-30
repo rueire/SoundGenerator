@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import "./Generator.css";
 import ParameterForm from "./assets/parameters";
 import SyxUpload from "./assets/syxUpload";
-import GenerateSyx from "./GenerateSyx1";
 
 function SoundGenerator() {
   const [xmlBlob, setXmlBlob] = useState(null); // returned xml
@@ -80,59 +79,177 @@ function SoundGenerator() {
 
     // generating + buttonpress happens here:
     //generateXML(patch);
+    let brass_1_patch = {
+      name: "BRASS   1",
+      algorithm: 22,
+      feedback: 7,
+      oscillator_sync: 1,
+      lfo_speed: 37,
+      lfo_delay: 0,
+      lfo_pm_depth: 5,
+      lfo_am_depth: 0,
+      pitch_mod_sensitivity: 3,
+      lfo_waveform: 4,
+      lfo_sync: 0,
+      transpose: 24,
+      pitch_eg_rate1: 84,
+      pitch_eg_rate2: 95,
+      pitch_eg_rate3: 95,
+      pitch_eg_rate4: 60,
+      pitch_eg_level1: 50,
+      pitch_eg_level2: 50,
+      pitch_eg_level3: 50,
+      pitch_eg_level4: 50,
+      operatorParams: [
+        {
+          eg_rate1: 49,
+          eg_rate2: 99,
+          eg_rate3: 28,
+          eg_rate4: 68,
+          eg_level1: 98,
+          eg_level2: 98,
+          eg_level3: 91,
+          eg_level4: 0,
+          key_scaling_break: 39,
+          key_scaling_left_depth: 54,
+          key_scaling_right_depth: 50,
+          key_scaling_left_curve: 1,
+          key_scaling_right_curve: 1,
+          oscillator_detune: 7,
+          rate_scaling: 4,
+          key_velocity_sensitivity: 2,
+          amp_mod_sensitivity: 0,
+          output_level: 82,
+          frequency_coarse: 1,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
 
-    // Example patch (Piano sound)
-    const patch2 = {
-      name: "Piano",
-      algorithm: 1, // Algorithm 1 is commonly used for piano sounds
-      feedback: 5, // Medium feedback for a clear sound
-      oscillator_sync: 0, // No oscillator sync for a piano sound
-      lfo_speed: 30, // Moderate LFO speed for subtle movement
-      lfo_delay: 0, // No delay for LFO
-      lfo_pm_depth: 0, // No pitch modulation depth for piano
-      lfo_am_depth: 0, // No amplitude modulation depth
-      pitch_mod_sensitivity: 0, // No pitch modulation
-      lfo_waveform: 2, // Square wave LFO
-      lfo_sync: 0, // No LFO sync
-      transpose: 0, // No transpose for standard piano range
-      pitch_eg_rate1: 50, // Standard attack rate for piano
-      pitch_eg_rate2: 70, // Slightly faster decay
-      pitch_eg_rate3: 85, // Sustain phase
-      pitch_eg_rate4: 99, // Longer release phase
-      pitch_eg_level1: 99, // Max pitch modulation depth at attack
-      pitch_eg_level2: 80, // Lower sustain level for piano sound
-      pitch_eg_level3: 60, // Sustain modulation to give more movement
-      pitch_eg_level4: 0, // No pitch modulation at release phase
-      operatorParams: Array.from({ length: 6 }, (_, i) => ({
-        eg_rate1: 50, // Fast attack
-        eg_rate2: 60, // Medium decay
-        eg_rate3: 80, // Medium sustain
-        eg_rate4: 99, // Long release
-        eg_level1: 99, // Max level at attack
-        eg_level2: 80, // Moderate sustain level
-        eg_level3: 60, // Slight decrease in sustain
-        eg_level4: 0, // No sound after release
-        key_scaling_break: 60, // Break point for key scaling
-        key_scaling_left_depth: 0, // No key scaling on the left
-        key_scaling_right_depth: 0, // No key scaling on the right
-        key_scaling_left_curve: 0, // No key scaling curve on the left
-        key_scaling_right_curve: 0, // No key scaling curve on the right
-        oscillator_detune: 0, // No detune for a clean piano sound
-        rate_scaling: 0, // No rate scaling
-        key_velocity_sensitivity: 0, // No velocity sensitivity
-        amp_mod_sensitivity: 0, // No modulation sensitivity
-        output_level: 100, // Max output level for a bright piano
-        frequency_coarse: 20, // Standard coarse frequency for piano sounds
-        oscillator_mode: 1, // Normal FM mode
-        frequency_fine: 0, // No fine-tuning for this preset
-      })),
+        {
+          eg_rate1: 77,
+          eg_rate2: 36,
+          eg_rate3: 41,
+          eg_rate4: 71,
+          eg_level1: 99,
+          eg_level2: 98,
+          eg_level3: 98,
+          eg_level4: 0,
+          key_scaling_break: 39,
+          key_scaling_left_depth: 0,
+          key_scaling_right_depth: 0,
+          key_scaling_left_curve: 3,
+          key_scaling_right_curve: 3,
+          oscillator_detune: 8,
+          rate_scaling: 0,
+          key_velocity_sensitivity: 2,
+          amp_mod_sensitivity: 0,
+          output_level: 98,
+          frequency_coarse: 1,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
+
+        {
+          eg_rate1: 77,
+          eg_rate2: 36,
+          eg_rate3: 41,
+          eg_rate4: 71,
+          eg_level1: 99,
+          eg_level2: 98,
+          eg_level3: 98,
+          eg_level4: 0,
+          key_scaling_break: 39,
+          key_scaling_left_depth: 0,
+          key_scaling_right_depth: 0,
+          key_scaling_left_curve: 3,
+          key_scaling_right_curve: 3,
+          oscillator_detune: 7,
+          rate_scaling: 0,
+          key_velocity_sensitivity: 2,
+          amp_mod_sensitivity: 0,
+          output_level: 99,
+          frequency_coarse: 1,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
+
+        {
+          eg_rate1: 77,
+          eg_rate2: 76,
+          eg_rate3: 82,
+          eg_rate4: 71,
+          eg_level1: 99,
+          eg_level2: 98,
+          eg_level3: 98,
+          eg_level4: 0,
+          key_scaling_break: 39,
+          key_scaling_left_depth: 0,
+          key_scaling_right_depth: 0,
+          key_scaling_left_curve: 3,
+          key_scaling_right_curve: 3,
+          oscillator_detune: 5,
+          rate_scaling: 0,
+          key_velocity_sensitivity: 2,
+          amp_mod_sensitivity: 0,
+          output_level: 99,
+          frequency_coarse: 1,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
+
+        {
+          eg_rate1: 62,
+          eg_rate2: 51,
+          eg_rate3: 29,
+          eg_rate4: 71,
+          eg_level1: 82,
+          eg_level2: 95,
+          eg_level3: 96,
+          eg_level4: 0,
+          key_scaling_break: 27,
+          key_scaling_left_depth: 0,
+          key_scaling_right_depth: 7,
+          key_scaling_left_curve: 3,
+          key_scaling_right_curve: 1,
+          oscillator_detune: 14,
+          rate_scaling: 0,
+          key_velocity_sensitivity: 0,
+          amp_mod_sensitivity: 0,
+          output_level: 86,
+          frequency_coarse: 0,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
+        {
+          eg_rate1: 72,
+          eg_rate2: 76,
+          eg_rate3: 99,
+          eg_rate4: 71,
+          eg_level1: 99,
+          eg_level2: 88,
+          eg_level3: 96,
+          eg_level4: 0,
+          key_scaling_break: 39,
+          key_scaling_left_depth: 0,
+          key_scaling_right_depth: 14,
+          key_scaling_left_curve: 3,
+          key_scaling_right_curve: 3,
+          oscillator_detune: 14,
+          rate_scaling: 0,
+          key_velocity_sensitivity: 0,
+          amp_mod_sensitivity: 0,
+          output_level: 98,
+          frequency_coarse: 0,
+          oscillator_mode: 0,
+          frequency_fine: 0,
+        },
+      ],
     };
-
-    generateSyx(patch2);
+    generateSyx(brass_1_patch);
   };
 
   const generateSyx = (patch) => {
-    const cartridge = new Uint8Array(32 * 155); // 32 patches, each 155 bytes long
+    const cartridge = new Uint8Array(32 * 128); // 32 patches, each 128 bytes long (Yamaha Dx7 bulk dump packet format, means voice patch is smaller than in single voice format)
 
     // Loop through all 32 patches
     for (let index = 0; index < 32; index++) {
@@ -187,10 +304,10 @@ function SoundGenerator() {
         };
       }
 
-      // Populate each operator's parameters for the patch
+      // Operator data
       for (let i = 0; i < 6; i++) {
-        const op = currentPatch.operatorParams[i];
-        const base = index * 155 + i * 21;
+        const op = currentPatch.operatorParams[5 - i];
+        const base = index * 128 + (5 - i) * 17; // Begins writing from operator 6-> op1.
 
         // Set operator parameters
         cartridge[base + 0] = op.eg_rate1;
@@ -206,63 +323,68 @@ function SoundGenerator() {
         cartridge[base + 8] = op.key_scaling_break;
         cartridge[base + 9] = op.key_scaling_left_depth;
         cartridge[base + 10] = op.key_scaling_right_depth;
-        cartridge[base + 11] = op.key_scaling_left_curve;
-        cartridge[base + 12] = op.key_scaling_right_curve;
-        cartridge[base + 13] = op.rate_scaling;
-        cartridge[base + 14] = op.amp_mod_sensitivity;
-        cartridge[base + 15] = op.key_velocity_sensitivity;
-        cartridge[base + 16] = op.output_level;
-
-        const coarse = op.frequency_coarse & 0x1f;
-        const mode = op.oscillator_mode & 0x01;
-        cartridge[base + 17] = (mode << 6) | coarse;
-
-        cartridge[base + 18] = op.frequency_fine;
-        cartridge[base + 19] = op.oscillator_detune;
-        cartridge[base + 20] = 0; // not used
+        cartridge[base + 11] =
+          (op.key_scaling_left_curve & 0x03) |
+          ((op.key_scaling_right_curve & 0x03) << 2);
+        cartridge[base + 12] =
+          ((op.oscillator_detune & 0x1f) << 3) | (op.rate_scaling & 0x07);
+        cartridge[base + 13] =
+          ((op.key_velocity_sensitivity & 0x07) << 2) |
+          (op.amp_mod_sensitivity & 0x03);
+        cartridge[base + 14] = op.output_level;
+        cartridge[base + 15] =
+          ((op.frequency_coarse & 0x1f) << 1) | (op.oscillator_mode & 0x01);
+        cartridge[base + 16] = op.frequency_fine;
       }
 
-      // Set the algorithm and feedback for this patch
-      cartridge[index * 155 + 134] = currentPatch.algorithm & 0x1f;
-      cartridge[index * 155 + 135] =
+      // Sets common parameters
+      const base = index * 128;
+
+      cartridge[base + 102] = currentPatch.pitch_eg_rate1;
+      cartridge[base + 103] = currentPatch.pitch_eg_rate2;
+      cartridge[base + 104] = currentPatch.pitch_eg_rate3;
+      cartridge[base + 105] = currentPatch.pitch_eg_rate4;
+
+      cartridge[base + 106] = currentPatch.pitch_eg_level1;
+      cartridge[base + 107] = currentPatch.pitch_eg_level2;
+      cartridge[base + 108] = currentPatch.pitch_eg_level3;
+      cartridge[base + 109] = currentPatch.pitch_eg_level4;
+
+      cartridge[base + 110] = (currentPatch.algorithm - 1) & 0x1f;
+      // Feedback is in bits 0–2, oscillator key sync is bit 3 of byte 111.
+      cartridge[base + 111] =
         (currentPatch.feedback & 0x07) |
         ((currentPatch.oscillator_sync & 0x01) << 3);
 
-      // Set the LFO parameters
-      cartridge[index * 155 + 136] = currentPatch.lfo_speed;
-      cartridge[index * 155 + 137] = currentPatch.lfo_delay;
-      cartridge[index * 155 + 138] = currentPatch.lfo_pm_depth;
-      cartridge[index * 155 + 139] = currentPatch.lfo_am_depth;
-      cartridge[index * 155 + 140] = currentPatch.lfo_sync;
-      cartridge[index * 155 + 141] = currentPatch.lfo_waveform;
-      cartridge[index * 155 + 142] = currentPatch.pitch_mod_sensitivity;
-      cartridge[index * 155 + 143] = currentPatch.transpose;
+      cartridge[base + 112] = currentPatch.lfo_speed;
+      cartridge[base + 113] = currentPatch.lfo_delay;
+      cartridge[base + 114] = currentPatch.lfo_pm_depth;
+      cartridge[base + 115] = currentPatch.lfo_am_depth;
+      // Byte 116: is in order 76543210. Pitch mod sensitivity (bits 6-4), lfo waveform (bits 3-1), lfo sync (bit 0).
+      cartridge[base + 116] =
+        ((currentPatch.pitch_mod_sensitivity & 0x07) << 4) |
+        ((currentPatch.lfo_waveform & 0x07) << 1) |
+        (currentPatch.lfo_sync & 0x01);
 
-      // Set the pitch EG settings
-      cartridge[index * 155 + 144] = currentPatch.pitch_eg_rate1;
-      cartridge[index * 155 + 145] = currentPatch.pitch_eg_rate2;
-      cartridge[index * 155 + 146] = currentPatch.pitch_eg_rate3;
-      cartridge[index * 155 + 147] = currentPatch.pitch_eg_rate4;
-
-      cartridge[index * 155 + 148] = currentPatch.pitch_eg_level1;
-      cartridge[index * 155 + 149] = currentPatch.pitch_eg_level2;
-      cartridge[index * 155 + 150] = currentPatch.pitch_eg_level3;
-      cartridge[index * 155 + 151] = currentPatch.pitch_eg_level4;
+      cartridge[base + 117] = currentPatch.transpose;
 
       // Set the name for the patch (10 characters)
       const name = (currentPatch.name || "INIT VOICE")
         .padEnd(10, " ")
         .slice(0, 10)
         .toUpperCase();
-      for (let i = 0; i < 10; i++) {
-        cartridge[index * 155 + 152 + i] = name.charCodeAt(i);
+      for (let j = 0; j < 10; j++) {
+        cartridge[base + 118 + j] = name.charCodeAt(j);
       }
     }
 
+    const sum = cartridge.reduce((acc, byte) => acc + (byte & 0x7f), 0);
+    const checksum = (128 - (sum % 128)) % 128;
+
     // Wrap the entire cartridge in a valid SysEx format
     function wrapInSysEx(cartridge) {
-      const header = [0xf0, 0x43, 0x00, 0x09, 0x20]; // Yamaha bulk dump (32 patches)
-      return Uint8Array.from([...header, ...cartridge, 0xf7]);
+      const header = [0xf0, 0x43, 0x00, 0x09, 0x20, 0x00]; // Yamaha bulk dump (32 patches)
+      return Uint8Array.from([...header, ...cartridge, checksum, 0xf7]);
     }
 
     // Generate the SysEx data
