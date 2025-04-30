@@ -6,13 +6,15 @@ export default function ParameterForm({ onChange }) {
 
     //These params are taken from user
     const [params, setParams] = useState({
-        algorithm: 1,
-        lfoWaveform: 1,
-        lfoSpeed: 10,
+        algorithm: 1, // 1-32
+        feedback: 1, // 0-7
+        pitchSensitivity: 7, //0-7
         operatorParams: Array(6).fill().map(() => ({
-            oscillatorMode: 1,
-            outputLvl: 80,
-            freqCoarse: 20
+            oscillatorMode: 1, // 0-1
+            output_level: 80, // 0-99
+            rateScaling: 2, // 0-7
+            eg_rate1: 1, // 0-99
+            eg_rate2: 1, // 0-99
         }))
     });
 
@@ -69,40 +71,31 @@ export default function ParameterForm({ onChange }) {
                         {algorithmOptions}
                     </select>
                 </div>
-                <div className="lfowave-container">
-                    <label htmlFor="lfoWaveform">LFO Waveform:</label>
+                <div className="feedback-container">
+                    <label htmlFor="feedback">Feedback:</label>
                     <input
                         type="range"
-                        id="lfoWaveform"
-                        name="lfoWaveform"
+                        id="feedback"
+                        name="feedback"
                         min="0"
-                        max="5"
+                        max="7"
                         step="1"
-                        value={params.lfoWaveform}
+                        value={params.feedback}
                         onChange={handleInput}
-                        className="lfo-slider"
-                    />
-                    <div className="slider-values">
-                        <span>0</span>
-                        <span>1</span>
-                        <span>2</span>
-                        <span>3</span>
-                        <span>4</span>
-                        <span>5</span>
-                    </div>
+                    /><span>{params.feedback}</span> {/* Display current value */}
                 </div>
                 {/* LFO Speed Slider */}
-                <div className="lfospeed-container">
-                    <label htmlFor="lfoSpeed">LFO Speed:</label>
+                <div className="pitchSensitivity-container">
+                    <label htmlFor="pitchSensitivity">Pitch Mod Sensitivity:</label>
                     <input
                         type="range"
-                        name="lfoSpeed"
+                        name="pitchSensitivity"
                         min="0"
-                        max="99"
-                        value={params.lfoSpeed}
+                        max="7"
+                        value={params.pitchSensitivity}
                         onChange={handleInput}
                     />
-                    <span>{params.lfoSpeed}</span> {/* Display current value */}
+                    <span>{params.pitchSensitivity}</span> {/* Display current value */}
                 </div>
             </div>
             {/* map through op.params*/}
@@ -124,30 +117,55 @@ export default function ParameterForm({ onChange }) {
                             </div>
                         </div>
                         <div className="output-container">
-                            <label htmlFor="outputlvl">Output Level:</label>
+                            <label htmlFor="output_level">Output Level:</label>
                             <input
                                 type="range"
-                                name="outputLvl"
+                                name="output_level"
                                 min="0"
                                 max="99"
-                                value={op.outputLvl}
+                                value={op.output_level}
                                 onChange={(e) => handleOperatorInput(index, e)}
                             />
-                            <span>{op.outputLvl}</span> {/* Display current value */}
+                            <span>{op.output_level}</span> {/* Display current value */}
                         </div>
-                        <div className="freqCoarse-container">
-                            <label htmlFor="freqCoarse">Frequency Coarse:</label>
+                        <div className="rateScaling-container">
+                            <label htmlFor="rateScaling">Rate Scaling:</label>
                             <input
                                 type="range"
-                                name="freqCoarse"
+                                name="rateScaling"
                                 min="0"
-                                max="31"
-                                value={params.operatorParams.freqCoarse}
+                                max="7"
+                                value={params.operatorParams.rateScaling}
                                 onChange={(e) => handleOperatorInput(index, e)}
                             />
-                            <span>{op.freqCoarse}</span> {/* Display current value */}
+                            <span>{op.rateScaling}</span> {/* Display current value */}
                         </div>
-
+                        <div className="eg_rate_container">
+                            <div className="eg_rate1-container">
+                                <label htmlFor="eg_rate1">EG rate1:</label>
+                                <input
+                                    type="range"
+                                    name="eg_rate1"
+                                    min="0"
+                                    max="99"
+                                    value={op.eg_rate1}
+                                    onChange={(e) => handleOperatorInput(index, e)}
+                                />
+                                <span>{op.eg_rate1}</span> {/* Display current value */}
+                            </div>
+                            <div className="eg_rate2-container">
+                                <label htmlFor="eg_rate2">EG rate2:</label>
+                                <input
+                                    type="range"
+                                    name="eg_rate2"
+                                    min="0"
+                                    max="99"
+                                    value={op.eg_rate2}
+                                    onChange={(e) => handleOperatorInput(index, e)}
+                                />
+                                <span>{op.eg_rate2}</span> {/* Display current value */}
+                            </div>
+                        </div>
                     </div>
                 </div> // index div
             ))}
