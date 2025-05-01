@@ -6,6 +6,7 @@ export default function ParameterForm({ onChange }) {
 
     //These params are taken from user
     const [params, setParams] = useState({
+        patchName: 'patch',
         algorithm: 1, // 1-32
         feedback: 1, // 0-7
         pitchSensitivity: 7, //0-7
@@ -23,7 +24,8 @@ export default function ParameterForm({ onChange }) {
         const { name, value } = e.target;
         setParams((prev) => ({
             //name: Hakee kentän nimen, joka on määritetty name-attribuutilla (esim. name="algorithm")
-            ...prev, [name]: Number(value),
+            ...prev,
+            [name]: isNaN(value) ? String(value) : Number(value),
         }));
     }
 
@@ -62,6 +64,16 @@ export default function ParameterForm({ onChange }) {
     return (
         <form className="parameter-form">
             <div className="basic-parameters-container">
+                <div className="patchName-container">
+                    <label htmlFor="patchName">Name:</label>
+                    <input 
+                    type="text"
+                    name="patchName"
+                    maxLength={10}
+                    placeholder="Patch Name(max 10 letters)"
+                    onChange={handleInput}
+                    />
+                </div>
                 <div className="algoritm-container">
                     <label htmlFor="algorithm">Algorithm:</label>
                     <select

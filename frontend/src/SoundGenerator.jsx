@@ -17,7 +17,7 @@ function SoundGenerator() {
   const generatePatch = () => {
     
     let brass_1_patch = {
-      name: "BRASS   1",
+      name: params.patchName ? params.patchName : 'BRASS 1',
       algorithm: params.algorithm,
       feedback: params.feedback,
       oscillator_sync: 1,
