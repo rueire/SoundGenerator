@@ -344,7 +344,7 @@ def plot_average_eg_curve_per_algorithm(df):
     plt.show()
 
 def draw_all_operator_eg_curves_per_algorithm(df):
-    # Draws EG curves for all 6 operators separately, grouped by algorithm.
+    # Draws EG curves for all 6 operators separately, grouped by algorithm number.
     algorithms = sorted(df["algorithm"].unique())
 
     for alg in algorithms:
@@ -361,7 +361,7 @@ def draw_all_operator_eg_curves_per_algorithm(df):
 
             draw_eg_curve(avg_levels, label=f"Operator {op}")
 
-        plt.title(f"Average EG curves for all operators - Algorithm {alg}")
+        plt.title(f"Average EG level curves for all operators - Algorithm {alg}")
         plt.xlabel("Stage (attack → decay → sustain → release)")
         plt.ylabel("Level 0–99")
         plt.legend()
@@ -401,10 +401,10 @@ def menu(df, filename):
         print("26. Amplitude modulation sensitivity (per operator)")
         print("27. Fine frequency tuning (per operator)")
         print("28: Draw average EG curve per algorithm (Operator 1)")
-        print("29: Draw average EG curves for all 6 operators per algorithm")
+        print("29: Draw average EG level curves for all 6 operators per algorithm")
         print("0. Exit")
 
-        choice = input("Enter choice (1–27), 0 for exit: ").strip()
+        choice = input("Enter choice (1–29), 0 for exit: ").strip()
 
         if choice == '1':
             analyze_algorithm_distribution(df, filename)
