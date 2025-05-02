@@ -11,7 +11,7 @@ export default function ParameterForm({ onChange }) {
         feedback: 1, // 0-7
         pitchSensitivity: 7, //0-7
         operatorParams: Array(6).fill().map(() => ({
-            oscillatorMode: 1, // 0-1
+            oscillatorMode: 0, // 0-1
             output_level: 80, // 0-99
             rateScaling: 2, // 0-7
             eg_rate1: 1, // 0-99
