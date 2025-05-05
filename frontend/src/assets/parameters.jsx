@@ -32,7 +32,7 @@ export default function ParameterForm({ onChange }) {
             eg_rate1: randomBetween(90, 99),
             eg_rate2: randomBetween(85, 95),
             eg_rate3: randomBetween(80, 90),
-            eg_rate4: randomBetween(60, 80),
+            eg_rate4: randomBetween(80, 99),
 
             eg_level1: 99,
             eg_level2: randomBetween(85, 95),
@@ -43,7 +43,7 @@ export default function ParameterForm({ onChange }) {
             eg_rate1: randomBetween(70, 80),
             eg_rate2: randomBetween(60, 70),
             eg_rate3: randomBetween(40, 50),
-            eg_rate4: randomBetween(20, 40),
+            eg_rate4: randomBetween(80, 99),
 
             eg_level1: 99,
             eg_level2: randomBetween(70, 85),
@@ -54,7 +54,7 @@ export default function ParameterForm({ onChange }) {
             eg_rate1: randomBetween(40, 65),
             eg_rate2: randomBetween(40, 55),
             eg_rate3: randomBetween(20, 40),
-            eg_rate4: randomBetween(10, 20),
+            eg_rate4: randomBetween(70, 90),
             
             eg_level1: 99,
             eg_level2: randomBetween(60, 80),

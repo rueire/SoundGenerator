@@ -34,7 +34,7 @@ export default function generateSyx(patch) {
                     eg_rate1: randomBetween(45, 99),
                     eg_rate2: randomBetween(0, 99),
                     eg_rate3: randomBetween(0, 99),
-                    eg_rate4: randomBetween(0, 99),
+                    eg_rate4: randomBetween(70, 99),
                     eg_level1: 99,
                     eg_level2: randomBetween(75, 99),
                     eg_level3: randomBetween(85, 99),
