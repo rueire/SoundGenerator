@@ -23,19 +23,43 @@ export default function ParameterForm({ onChange }) {
         }))
     });
 
+    // to help randomizing
+    const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
     // eg presets for envelope values
     const egPresets = {
         0: {
-            eg_rate1: 99, eg_rate2: 95, eg_rate3: 80, eg_rate4: 60,
-            eg_level1: 99, eg_level2: 95, eg_level3: 80, eg_level4: 0
+            eg_rate1: randomBetween(90, 99),
+            eg_rate2: randomBetween(85, 95),
+            eg_rate3: randomBetween(80, 90),
+            eg_rate4: randomBetween(60, 80),
+
+            eg_level1: 99,
+            eg_level2: randomBetween(85, 95),
+            eg_level3: randomBetween(80, 90),
+            eg_level4: 0
         },
         1: {
-            eg_rate1: 80, eg_rate2: 70, eg_rate3: 50, eg_rate4: 30,
-            eg_level1: 99, eg_level2: 85, eg_level3: 70, eg_level4: 0
+            eg_rate1: randomBetween(70, 80),
+            eg_rate2: randomBetween(60, 70),
+            eg_rate3: randomBetween(40, 50),
+            eg_rate4: randomBetween(20, 40),
+
+            eg_level1: 99,
+            eg_level2: randomBetween(70, 85),
+            eg_level3: randomBetween(50, 70),
+            eg_level4: 0
         },
         2: {
-            eg_rate1: 60, eg_rate2: 60, eg_rate3: 40, eg_rate4: 20,
-            eg_level1: 99, eg_level2: 75, eg_level3: 60, eg_level4: 0
+            eg_rate1: randomBetween(40, 65),
+            eg_rate2: randomBetween(40, 55),
+            eg_rate3: randomBetween(20, 40),
+            eg_rate4: randomBetween(10, 20),
+            
+            eg_level1: 99,
+            eg_level2: randomBetween(60, 80),
+            eg_level3: randomBetween(40, 60),
+            eg_level4: 0
         }
     };
 
@@ -67,9 +91,6 @@ export default function ParameterForm({ onChange }) {
     //handle EG changes
     const handleEGChange = (index, e) => {
         const chosenValue = parseInt(e.target.value, 10);
-        // below are debugs
-        // console.log("Applying EG preset", chosenValue, "to operator", index);
-        // console.log(egPresets[chosenValue]);
 
         setParams((prev) => {
             const updatedOperators = [...prev.operatorParams];
@@ -79,12 +100,15 @@ export default function ParameterForm({ onChange }) {
                 selectedEG: chosenValue
                 
             };
+            // below are debugs
+            // console.log("Applying EG preset", chosenValue, "to operator", index);
             
             return {
                 ...prev,
                 operatorParams: updatedOperators
             };
         })
+        console.log(egPresets[chosenValue]);
     }
 
     // useEffect to keep up w/parameter changes
