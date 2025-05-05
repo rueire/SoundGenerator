@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 
 export default function ParameterForm({ onChange }) {
-    // const [lfoWaveform, setLfoWaveform] = useState(0);
-    // const [xmlBlob, setXmlBlob] = useState(null); // xml to send
-
     //These params are taken from user
     const [params, setParams] = useState({
         patchName: 'patch',
@@ -15,9 +12,32 @@ export default function ParameterForm({ onChange }) {
             output_level: 80, // 0-99
             rateScaling: 2, // 0-7
             eg_rate1: 1, // 0-99
+            eg_rate2: 1, // 0-99
+            eg_rate3: 1, // 0-99
             eg_rate4: 1, // 0-99
+            eg_level1: 1, // 0-99
+            eg_level2: 1, // 0-99
+            eg_level3: 1, // 0-99
+            eg_level4: 1, // 0-99
+            selectedEG: 0,
         }))
     });
+
+    // eg presets for envelope values
+    const egPresets = {
+        0: {
+            eg_rate1: 99, eg_rate2: 95, eg_rate3: 80, eg_rate4: 60,
+            eg_level1: 99, eg_level2: 95, eg_level3: 80, eg_level4: 0
+        },
+        1: {
+            eg_rate1: 80, eg_rate2: 70, eg_rate3: 50, eg_rate4: 30,
+            eg_level1: 99, eg_level2: 85, eg_level3: 70, eg_level4: 0
+        },
+        2: {
+            eg_rate1: 60, eg_rate2: 60, eg_rate3: 40, eg_rate4: 20,
+            eg_level1: 99, eg_level2: 75, eg_level3: 60, eg_level4: 0
+        }
+    };
 
     //Handle basic Parameters
     const handleInput = (e) => {
@@ -33,7 +53,7 @@ export default function ParameterForm({ onChange }) {
     const handleOperatorInput = (index, e) => {
 
         setParams((prev) => {
-            console.log(params.operatorParams[index]); // debug
+            // console.log(params.operatorParams[index]); // debug
             const updatedOperators = [...prev.operatorParams];
             updatedOperators[index][e.target.name] = parseInt(e.target.value, 10);
 
@@ -44,10 +64,45 @@ export default function ParameterForm({ onChange }) {
         });
     };
 
-    // keep up w/parameter changes
+    //handle EG changes
+    const handleEGChange = (index, e) => {
+        const chosenValue = parseInt(e.target.value, 10);
+        // below are debugs
+        // console.log("Applying EG preset", chosenValue, "to operator", index);
+        // console.log(egPresets[chosenValue]);
+
+        setParams((prev) => {
+            const updatedOperators = [...prev.operatorParams];
+            updatedOperators[index] = {
+                ...updatedOperators[index],
+                ...egPresets[chosenValue],
+                selectedEG: chosenValue
+                
+            };
+            
+            return {
+                ...prev,
+                operatorParams: updatedOperators
+            };
+        })
+    }
+
+    // useEffect to keep up w/parameter changes
     useEffect(() => {
         onChange(params);
     }, [params, onChange]);
+
+    // useEffect to make sure eg preset values are there when page loads
+    useEffect(() => {
+        setParams((prev) => {
+            const updatedOperators = prev.operatorParams.map((op) => ({
+                ...op,
+                ...egPresets[0], //  set preset 0 as default
+                selectedEG: 0,
+            }));
+            return { ...prev, operatorParams: updatedOperators };
+        });
+    }, []); //empty dependency array: runs only once
 
     //For Loop for algorithm options
     const algorithmOptions = [];
@@ -66,12 +121,12 @@ export default function ParameterForm({ onChange }) {
             <div className="basic-parameters-container">
                 <div className="patchName-container">
                     <label htmlFor="patchName">Name:</label>
-                    <input 
-                    type="text"
-                    name="patchName"
-                    maxLength={10}
-                    placeholder="Patch Name(max 10 letters)"
-                    onChange={handleInput}
+                    <input
+                        type="text"
+                        name="patchName"
+                        maxLength={10}
+                        placeholder="Patch Name(max 10 letters)"
+                        onChange={handleInput}
                     />
                 </div>
                 <div className="algoritm-container">
@@ -114,7 +169,7 @@ export default function ParameterForm({ onChange }) {
             {params.operatorParams.map((op, index) => (
                 <div key={index}>
                     <div className="operator-parameters-container">
-                        <div className="output-container">
+                        <div className="container">
                             <label htmlFor="6"> {index + 1} </label>
                             <div className="osc-container" id='osc_param6'>
                                 <label htmlFor="oscillator">Oscillator:</label>
@@ -152,31 +207,17 @@ export default function ParameterForm({ onChange }) {
                             />
                             <span>{op.rateScaling}</span> {/* Display current value */}
                         </div>
-                        <div className="eg_rate_container">
-                            <div className="eg_rate1-container">
-                                <label htmlFor="eg_rate1">EG rate1:</label>
-                                <input
-                                    type="range"
-                                    name="eg_rate1"
-                                    min="0"
-                                    max="99"
-                                    value={op.eg_rate1}
-                                    onChange={(e) => handleOperatorInput(index, e)}
-                                />
-                                <span>{op.eg_rate1}</span> {/* Display current value */}
-                            </div>
-                            <div className="eg_rate4-container">
-                                <label htmlFor="eg_rate4">EG rate2:</label>
-                                <input
-                                    type="range"
-                                    name="eg_rate4"
-                                    min="0"
-                                    max="99"
-                                    value={op.eg_rate4}
-                                    onChange={(e) => handleOperatorInput(index, e)}
-                                />
-                                <span>{op.eg_rate4}</span> {/* Display current value */}
-                            </div>
+                        <div className="EG-container">
+                                <label htmlFor="EG-values">EG:</label>
+                                <select
+                                    name="eg-values"
+                                    value={op.selectedEG}
+                                    onChange={(e) => handleEGChange(index, e)}
+                                >
+                                    <option value={0}>High and Fast</option>
+                                    <option value={1}>Medium</option>
+                                    <option value={2}>Slow and Steady</option>
+                                </select>
                         </div>
                     </div>
                 </div> // index div
