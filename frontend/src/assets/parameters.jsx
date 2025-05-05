@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+// to help randomizing
+export const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
 export default function ParameterForm({ onChange }) {
     //These params are taken from user
     const [params, setParams] = useState({
@@ -22,9 +25,6 @@ export default function ParameterForm({ onChange }) {
             selectedEG: 0,
         }))
     });
-
-    // to help randomizing
-    const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
     // eg presets for envelope values
     const egPresets = {
