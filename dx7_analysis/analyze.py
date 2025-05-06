@@ -369,6 +369,67 @@ def draw_all_operator_eg_curves_per_algorithm(df):
         plt.tight_layout()
         plt.show()
 
+# Yamaha DX7’s actual rate-to-time mapping is nonlinear and influenced by many factors,
+# so this function tries to make up somewhat realistic visual estimate of those EG rates.
+# Maps eg_rate (0–99) to an approximate time duration in seconds.
+def rate_to_time(rate, max_time=5.0):
+    # Higher eg_rate means smaller time (99 is fastest).
+    # Estimates: fastest = 0.01 sec, slowest = 5 sec.
+    rate = max(1, min(rate, 99))
+    # Makes the time curve steeper for lower rates.
+    return max_time * (1.0 - rate / 99.0) ** 2
+
+# Plots the average time-evolving envelope curves for all 6 operators in a given algorithm based on EG levels and rates.
+def draw_all_operator_time_eg_curves(df, algorithm):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    subset = df[df["algorithm"] == algorithm]
+    if subset.empty:
+        print(f"No data found for algorithm {algorithm}")
+        return
+
+    plt.figure(figsize=(12, 8))
+
+    # Loops through the 6 operators.
+    for operator in range(1, 7):
+        try:
+            levels = [subset[f"operator_{operator}_eg_level{i}"].mean() for i in range(1, 5)]
+            rates  = [subset[f"operator_{operator}_eg_rate{i}"].mean() for i in range(1, 5)]
+        except KeyError:
+            print(f"Missing EG data for operator {operator}")
+            continue
+
+        times = [rate_to_time(r) for r in rates]
+
+        # Build envelope segments
+        envelope_times = [0]
+        envelope_levels = [levels[0]]
+
+        stages = [
+            (levels[0], levels[1], times[0]),  # Attack: eg_level1 -> eg_level2
+            (levels[1], levels[2], times[1]),  # Decay: eg_level2 -> eg_level3
+            (levels[2], levels[2], 0.5),       # Sustain: holds eg_level3
+            (levels[2], levels[3], times[3])   # Release: eg_level3 -> eg_level4
+        ]
+
+        for start, end, duration in stages:
+            t = np.linspace(envelope_times[-1], envelope_times[-1] + duration, num=100)
+            l = np.linspace(start, end, num=100)
+            envelope_times.extend(t[1:])
+            envelope_levels.extend(l[1:])
+
+        plt.plot(envelope_times, envelope_levels, label=f"Operator {operator}")
+
+    plt.title(f"Simulated envelope generator(EG) stages - Algorithm {algorithm}")
+    plt.xlabel("Time based on eg rate (approx. seconds)")
+    plt.ylabel("EG level (0–99)")
+    plt.yticks(np.arange(0, 101, 10))
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
 # Displays the main menu and routes user's choice.
 def menu(df, filename):
     while True:
@@ -400,8 +461,8 @@ def menu(df, filename):
         print("25. Key velocity sensitivity (per operator)")
         print("26. Amplitude modulation sensitivity (per operator)")
         print("27. Fine frequency tuning (per operator)")
-        print("28: Draw average EG curve per algorithm (Operator 1)")
-        print("29: Draw average EG level curves for all 6 operators per algorithm")
+        print("28: Draw average EG level curves for all 6 operators per algorithm")
+        print("29: Simulate time-based EG curves for all 6 operators (per algorithm)")
         print("0. Exit")
 
         choice = input("Enter choice (1–29), 0 for exit: ").strip()
@@ -528,14 +589,21 @@ def menu(df, filename):
                 per_operator=True
             )
         elif choice == "28":
-            plot_average_eg_curve_per_algorithm(df)
-        elif choice == "29":
             draw_all_operator_eg_curves_per_algorithm(df)
+        elif choice == "29":
+            try:
+                alg = int(input("Enter algorithm number (1–32): ").strip())
+                if alg not in range(1, 33):
+                    print("Invalid algorithm number.")
+                else:
+                    draw_all_operator_time_eg_curves(df, algorithm=alg)
+            except ValueError:
+                print("Please enter a valid algorithm number (1-32).")
         elif choice == '0':
-            print("Exiting...")
+            print("Exiting DX7 analyzer...")
             break
         else:
-            print("Invalid choice, please enter correct number.")
+            print("Not a valid choice, please enter correct number.")
 
 # Shows patches with transpose values over 48 (which are from bad patches).
 def inspect_invalid_transpose(df):
