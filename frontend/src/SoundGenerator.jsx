@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react';
-import './Generator.css'
-import ParameterForm from './assets/parameters'
-import SyxUpload from './assets/syxUpload';
-import generateSyx from './assets/generateSyx';
+import { useState, useCallback } from "react";
+import "./Generator.css";
+import ParameterForm from "./assets/parameters";
+import SyxUpload from "./assets/syxUpload";
+import generateSyx from "./assets/generateSyx";
 
 function SoundGenerator() {
-  const [xmlBlob, setXmlBlob] = useState(null); // returned xml
+  // const [xmlBlob, setXmlBlob] = useState(null); // returned xml
   const [params, setParams] = useState(null);
 
   // parameter data from parameters.jsx
@@ -15,9 +15,8 @@ function SoundGenerator() {
 
   //dx7 patch OBJECT
   const generatePatch = () => {
-    
     let brass_1_patch = {
-      name: params.patchName ? params.patchName : 'BRASS 1',
+      name: params.patchName ? params.patchName : "BRASS 1",
       algorithm: params.algorithm,
       feedback: params.feedback,
       oscillator_sync: 1,
@@ -182,24 +181,26 @@ function SoundGenerator() {
         },
       ],
     };
-    // debug
-    // console.log("OP 5 EG values:", params.operatorParams[4]);
     generateSyx(brass_1_patch);
-  }
+  };
 
+  /*
   //backend to make syx --> xml
   const Uploadfile = async (file) => {
-    console.log("Upload button pressed")
+    console.log("Upload button pressed");
 
     //send to backend
     const formData = new FormData();
     formData.append("syxFile", file);
 
     try {
-      const response = await fetch("http://localhost:8000/api/upload_syx_file", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/upload_syx_file",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("File upload failed");
@@ -208,48 +209,39 @@ function SoundGenerator() {
       // receive xml from backend
       const xmlBlob = await response.blob();
       setXmlBlob(xmlBlob);
-
     } catch (error) {
       console.error("Error:", error);
     }
-  }
+  };
+  */
+
+  /*
   // download user's XML onClick
   const XmlDownload = () => {
     if (xmlBlob) {
       const url = URL.createObjectURL(xmlBlob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'converted.xml'; // customize the filename here
+      link.download = "converted.xml"; // customize the filename here
       link.click();
       URL.revokeObjectURL(url); // Clean up the object URL after download
     }
-  }
+  };
+  */
 
   return (
     <>
-      <div className='parameter-container'>
+      <div className="parameter-container">
+        <h1>DX7 Patch Generator</h1>
         <ParameterForm onChange={handleParamsChange} />
-        <div className='button-container'>
-          <button className='generate-btn'onClick={generatePatch}>Generate Sound
-        </button>
-        </div>
-
-        {/* delete below later */}
-        <div className='upload_form'>
-          <SyxUpload onFileUpload={Uploadfile} />
-        </div>
-        <div className='buttons_container'>
-          {/* <button className='upload_btn'>Upload file</button> */}
-          {/* Display download button only if XML is available */}
-          {xmlBlob && (
-            <button onClick={XmlDownload} className="download-button">
-              Download XML
-            </button>
-          )}
+        <div className="button-container">
+          <button className="generate-btn" onClick={generatePatch}>
+            Generate Sound
+          </button>
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default SoundGenerator
+export default SoundGenerator;
