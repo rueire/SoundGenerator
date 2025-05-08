@@ -187,6 +187,7 @@ function SoundGenerator() {
     generateSyx(brass_1_patch);
   }
 
+  //backend to make syx --> xml
   const Uploadfile = async (file) => {
     console.log("Upload button pressed")
 
@@ -226,21 +227,26 @@ function SoundGenerator() {
 
   return (
     <>
-      <div className='parameter_form'>
+      <div className='parameter-container'>
         <ParameterForm onChange={handleParamsChange} />
-      </div>
-      <div className='upload_form'>
-        <SyxUpload onFileUpload={Uploadfile} />
-      </div>
-      <div className='buttons_container'>
-        {/* <button className='upload_btn'>Upload file</button> */}
-        {/* Display download button only if XML is available */}
-        {xmlBlob && (
-          <button onClick={XmlDownload} className="download-button">
-            Download XML
-          </button>
-        )}
-        <button className='generate_btn' onClick={generatePatch}>Generate Sound</button>
+        <div className='button-container'>
+          <button className='generate-btn'onClick={generatePatch}>Generate Sound
+        </button>
+        </div>
+
+        {/* delete below later */}
+        <div className='upload_form'>
+          <SyxUpload onFileUpload={Uploadfile} />
+        </div>
+        <div className='buttons_container'>
+          {/* <button className='upload_btn'>Upload file</button> */}
+          {/* Display download button only if XML is available */}
+          {xmlBlob && (
+            <button onClick={XmlDownload} className="download-button">
+              Download XML
+            </button>
+          )}
+        </div>
       </div>
     </>
   )
