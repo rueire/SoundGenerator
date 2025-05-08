@@ -1,0 +1,121 @@
+html {
+    /*centers stuff on screen*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    background-color: rgb(56, 61, 91);
+}
+
+label {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+/*======================================*/
+/*BUTTON in SoundGenerator.jsx*/
+
+.button-container {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+    width: 100%;
+}
+
+.generate-btn {
+    width: 200px;
+    height: 50px;
+
+    background-color: rgb(169, 210, 210);
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    margin-top: 20px;
+    border: solid 2px;
+    border-radius: 2cm;
+
+}
+
+.generate-btn:hover {
+    background-color: rgb(107, 83, 131);
+    color: white;
+}
+
+/*========================================*/
+/*PARAMETER FORM in SoundGenerator.jsx*/
+.parameter-container {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    /* margin-left: 100px; */
+}
+
+.parameter-form {
+    position: relative;
+    /*relative: inside conts are column-like*/
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    border-radius: 10px;
+    padding: 5%;
+    margin: 0%;
+    gap: 30px;
+    max-width: 70%;
+    background-color: rgb(206, 218, 226);
+}
+
+
+/*=============================================*/
+/*BASIC PARAMS in parameters.jsx*/
+
+.basic-parameters-container {
+    width: 100%;
+
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    gap: 30px;
+}
+
+/*========================================*/
+
+/* OPERATOR PARAMS in parameters.jsx*/
+
+.operator-parameters-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    margin: 0;
+
+    border: solid 2px;
+    border-radius: 5%;
+
+}
+
+.eg_rate_container {
+
+    border: solid 1px;
+    border-radius: 10%;
+    padding: 20px;
+}
