@@ -1,8 +1,14 @@
-# Generates a syx file, based on the preset values.
-# First voice patch is BRASS 1, that works in Dexed. Rest are EMPTY with mostly 0 values.
+# This script generates a DX7 cartridge file in SysEx format for testing purposes.
+# It creates a bulk dump of 32 patches, each 128 bytes long.
+# The first patch is always BRASS 1 sound from original Yamaha DX7 rom to demonstrate the functionality, and to easen testing with Dexed emulator.
+# The rest are empty patches with default values.
 
-# run with:
+# The generated file is saved as "dx7_cart.syx".
+
+# ***
+# Run with:
 # python generate_syx.py
+# ***
 
 def generate_dx7_bulk(patch):
     cartridge = bytearray(32 * 128)  # 32 patches, 128 bytes each
@@ -99,40 +105,24 @@ def generate_dx7_bulk(patch):
         cartridge[common_base + 116] = ((current_patch['pitch_mod_sensitivity'] & 0x07) << 4) | ((current_patch['lfo_waveform'] & 0x07) << 1) | (current_patch['lfo_sync'] & 0x01)
         cartridge[common_base + 117] = current_patch['transpose']
 
-        # Writes patch name.
+        # Writes the patch name.
         name = (current_patch['name'] or "INIT VOICE").ljust(10)[:10].upper()
-        #print("Writing patch name for index", index, ":", repr(current_patch['name']))
-        #print("Final padded name:", repr(name))
         for i, c in enumerate(name):
             cartridge[common_base + 118 + i] = ord(c)
 
-    # Checks cartridge size
-    #print("Cartridge size:", len(cartridge))  # Should print 4096
-
-    # Extra check for debugging
-    #patch_name_bytes = cartridge[118:128]
-    #print("Patch name raw bytes:", patch_name_bytes)
-    #print("Patch name:", patch_name_bytes.decode("ascii", errors="replace"))
-
     # Wraps in SysEx format.
     header = bytes([0xF0, 0x43, 0x00, 0x09, 0x20, 0x00])
+
     # Calculates checksum: it's sum of all 4096 cartridge bytes, modulo 128, subtract from 128.
     checksum = (128 - (sum(cartridge) % 128)) % 128
     checksum_byte = bytes([checksum])
     footer = bytes([0xF7])
-
-    #print("Header:", header)
-    #print("First few voice bytes:", cartridge[:16])
-    #print("Checksum:", checksum_byte)
-    #print("Footer:", footer)
-    #print("Total length:", len(header + cartridge + checksum_byte + footer))  # Should be 4104
 
     sysex_data = header + cartridge + checksum_byte + footer
 
     with open("dx7_cart.syx", "wb") as f:
         f.write(sysex_data)
 
-    #print("Total sysex size:", len(sysex_data))  # Should print 4104
     print("Created sysex file 'dx7_cart.syx'!")
 
 
