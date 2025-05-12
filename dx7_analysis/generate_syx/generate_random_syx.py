@@ -1,9 +1,17 @@
 import random
-# Generates a syx file, based on the preset values.
-# First voice patch is BRASS 1, that works in Dexed. Rest are EMPTY with mostly 0 values.
 
-# run with:
-# python generate_syx_w_random.py
+# This script generates a DX7 cartridge file in SysEx format for testing purposes.
+# It creates a bulk dump of 32 patches, each 128 bytes long.
+# The first patch is always BRASS 1 sound from original Yamaha DX7 rom to demonstrate the functionality, and to easen testing with Dexed emulator.
+# The rest are patches with mix of default values and randomized values.
+# Randomized values used in this script are based on the results of the data analysis of the original DX7 patches.
+
+# The generated file is saved as "dx7_random_cart.syx".
+
+# ***
+# Run with:
+# python generate_random_syx.py
+# ***
 
 def generate_random_patch(index):
     patch = {
@@ -19,7 +27,7 @@ def generate_random_patch(index):
         'lfo_waveform': random.randint(0, 5),
         'lfo_sync': 0,
         'transpose': 24,
-        'pitch_eg_rate1': random.randint(0, 99), # 84,94,99
+        'pitch_eg_rate1': random.randint(0, 99), # Possible good values 84,94,99
         'pitch_eg_rate2': random.randint(0, 99), # 67,98,99
         'pitch_eg_rate3': random.randint(0, 99), # 95, 99
         'pitch_eg_rate4': random.randint(0, 99), # 0,60,99
@@ -112,15 +120,13 @@ def generate_dx7_bulk(patch):
 
         # Writes patch name.
         name = (current_patch['name'] or "INIT VOICE").ljust(10)[:10].upper()
-        #print("Writing patch name for index", index, ":", repr(current_patch['name']))
-        #print("Final padded name:", repr(name))
         for i, c in enumerate(name):
             cartridge[common_base + 118 + i] = ord(c)
 
-    # Checks cartridge size
+    # Checks cartridge size.
     print("Cartridge size:", len(cartridge))  # Should print 4096
 
-    # Extra check for debugging
+    # Extra check for debugging.
     patch_name_bytes = cartridge[118:128]
     print("Patch name raw bytes:", patch_name_bytes)
     print("Patch name:", patch_name_bytes.decode("ascii", errors="replace"))

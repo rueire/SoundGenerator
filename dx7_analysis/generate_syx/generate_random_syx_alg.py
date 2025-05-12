@@ -1,9 +1,19 @@
 import random
-# Generates a syx file, based on the preset values and random generating.
-# First voice patch is BRASS 1, that works in Dexed. Rest are randomized.
 
-# run with:
-# python generate_syx_w_random_alg.py
+# This script generates a DX7 SysEx file, based on the preset values and random generating.
+# The first patch is always BRASS 1 sound from original Yamaha DX7 rom to demonstrate the functionality, and to easen testing with Dexed emulator.
+# The rest are patches with mix of default values and randomized values.
+# Randomized values used in this script are based on the results of the data analysis of the original DX7 patches.
+
+# This script adds algorithm selection to the early stages of the patch generation process.
+# The algorithm is chosen randomly from 1 to 32, and the carrier operators are determined based on the selected algorithm.
+# The patch is then generated with the selected algorithm and its corresponding carrier operators.
+# No further analysis of how the algorithm and it's carrier operators affect the randomized sound is done in this script, so consider this a work in progress.
+
+# ***
+# Run with:
+# python generate_random_syx_alg.py
+# ***
 
 # Maps each DX7 algorithm (1–32) to its carrier operators.
 ALGORITHM_CARRIERS = {
