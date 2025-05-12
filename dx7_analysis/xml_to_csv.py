@@ -16,7 +16,7 @@ from lxml import etree
 # pip install lxml
 
 # Run the script with:
-# python xml_to_csv_all.py
+# python xml_to_csv.py
 # -------------------------------------------------------------
 
 # Function to extract patch data from a single XML file.
