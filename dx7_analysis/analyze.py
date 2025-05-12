@@ -5,26 +5,29 @@ import os
 import numpy as np
 
 # -------------------------------------------------------------
-# CLI-based DX7 patch analyzer app.
+# This app analyzes Yamaha DX7 patch data extracted from .syx files and converted to CSV format.
+# It provides various analyses and visualizations of the data.
 
-# Let's you analyze a csv file, print out the exact values and produce charts based on the analyzes.
-# The charts can be saved on the computer.
+# Install required libraries:
+# pip install lxml pandas matplotlib
 
-# -------------------------------------------------------------
-# Install pandas and matplotlib. (pip install pandas matplotlib)
 # Run with:
 # python analyze.py csvfile.csv
+
+# The app is designed to be run from the command line.
+# It takes a CSV file as input and generates various analyses and charts based on the data.
+# The CSV file should be created using xml_to_csv.py, so that the data extracted from DX7 patches are in correct order for this app.
+
+# The app provides a menu-driven interface for users to select different analyses to perform on the data.
+# The output of the analyses includes mostly visualizations (charts) that can be displayed and saved.
 # -------------------------------------------------------------
 
-# After the chart pop ups, remember to close it to continue using the CLI app.
-# -------------------------------------------------------------
-
-# Loads csv into a pandas dataframe.
+# Loads the csv file into a pandas dataframe.
 def load_data(csv_path):
     df = pd.read_csv(csv_path)
     return df
 
-# Analyzes how often each algorithm (0–31) is used.
+# Analyzes the usage of algorithms (0–31).
 def analyze_algorithm_distribution(df, filename):
     algo_counts = df['algorithm'].value_counts().sort_index()
     plt.figure(figsize=(18, 6))
@@ -37,7 +40,7 @@ def analyze_algorithm_distribution(df, filename):
     plt.tight_layout()
     plt.show()
 
-# Analyzes how often each LFO waveform type appears.
+# Analyzes how often each LFO waveform is used.
 def analyze_lfo_waveform(df, filename):
     waveform_counts = df['lfo_waveform'].value_counts().sort_index()
     plt.figure(figsize=(10, 6))
@@ -86,14 +89,13 @@ def analyze_output_levels(df, filename):
 
 # Analyzes LFO speed.
 def analyze_lfo_speed(df, filename):
-    # Drops NaN and converts to integers.
     speeds = df['lfo_speed'].dropna().astype(int)
 
-    # Clamps all values over 99 into a '100+' part.
-    speeds_clamped = speeds.apply(lambda x: x if x <= 99 else 100)
+    # Collects all values over 99 into a '100+' part (which are bad values).
+    speeds_collected = speeds.apply(lambda x: x if x <= 99 else 100)
 
-    # Counts occurrences of each value, including '100+'.
-    value_counts = speeds_clamped.value_counts().sort_index()
+    # Counts occurrences of each value.
+    value_counts = speeds_collected.value_counts().sort_index()
 
     # Makes the x-axis labels nicer.
     labels = [str(i) for i in range(0, 100)] + ['100+']
@@ -109,6 +111,7 @@ def analyze_lfo_speed(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes feedback level.
 def analyze_feedback(df, filename):
     feedback_counts = df['feedback'].value_counts().sort_index()
     plt.figure(figsize=(8, 6))
@@ -120,6 +123,7 @@ def analyze_feedback(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes LFO delay time.
 def analyze_lfo_delay(df, filename):
     delay = df['lfo_delay'].dropna().astype(int)
     delay_counts = delay.value_counts().sort_index()
@@ -132,6 +136,7 @@ def analyze_lfo_delay(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes pitch modulation sensitivity.
 def analyze_pitch_mod_sensitivity(df, filename):
     pms_counts = df['pitch_mod_sensitivity'].value_counts().sort_index()
     plt.figure(figsize=(8, 6))
@@ -143,6 +148,7 @@ def analyze_pitch_mod_sensitivity(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes LFO pitch modulation depth.
 def analyze_lfo_pm_depth(df, filename):
     pm = df['lfo_pm_depth'].dropna().astype(int)
     pm_counts = pm.value_counts().sort_index()
@@ -155,6 +161,7 @@ def analyze_lfo_pm_depth(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes LFO amplitude modulation depth.
 def analyze_lfo_am_depth(df, filename):
     am = df['lfo_am_depth'].dropna().astype(int)
     am_counts = am.value_counts().sort_index()
@@ -167,6 +174,9 @@ def analyze_lfo_am_depth(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes pitch EG rates.
+# This function creates histograms for each pitch EG rate.
+# It also prints the exact counts of each rate value.
 def analyze_pitch_eg_rates(df, filename):
     plt.figure(figsize=(18, 6))
     bin_edges = np.arange(0, 101)
@@ -193,6 +203,8 @@ def analyze_pitch_eg_rates(df, filename):
     plt.tight_layout()
     plt.show()
 
+# Analyzes pitch EG levels.
+# This function creates histograms for each pitch EG level.
 def analyze_pitch_eg_levels(df, filename):
     plt.figure(figsize=(18, 6))
     bin_edges = np.arange(0, 101)
@@ -219,7 +231,7 @@ def analyze_pitch_eg_levels(df, filename):
     plt.tight_layout()
     plt.show()
 
-# General function for analyzing any operator-level parameter.
+# General function for analyzing operator-level parameter.
 def analyze_operator_param(df, param_suffix, title, xlabel, bins=None, per_operator=False):
     # Chooses default bins based on the parameter type, if not provided.
     if bins is None:
@@ -314,64 +326,45 @@ def analyze_operator_param(df, param_suffix, title, xlabel, bins=None, per_opera
         plt.tight_layout()
         plt.show()
 
+# Draws a simple envelope generator (EG) curve.
+# This function is used to visualize the EG levels for each operator.
 def draw_eg_curve(levels, label=None):
     # Draws a simple 4-stage EG shape using DX7 EG levels (1-4).
     times = [0, 1, 2, 3, 4]
-    points = [levels[0], levels[1], levels[2], levels[3], 0]  # End at level 0 for decay
+    points = [levels[0], levels[1], levels[2], levels[3], 0]  # Ends at level 0 for decay.
     plt.plot(times, points, marker='o', label=label)
 
-def plot_average_eg_curve_per_algorithm(df):
+# Draws an average EG level curve for a chosen algorithm, showing all 6 operators.
+def draw_operator_eg_level_curve_for_algorithm(df, algorithm):
+    subset = df[df["algorithm"] == algorithm]
+
+    if subset.empty:
+        print(f"No patches found for algorithm {algorithm}.")
+        return
+
     plt.figure(figsize=(12, 8))
 
-    for alg in sorted(df["algorithm"].unique()):
-        subset = df[df["algorithm"] == alg]
-
+    for op in range(1, 7):
         avg_levels = [
-            subset["operator_1_eg_level1"].mean(),
-            subset["operator_1_eg_level2"].mean(),
-            subset["operator_1_eg_level3"].mean(),
-            subset["operator_1_eg_level4"].mean()
+            subset[f"operator_{op}_eg_level1"].mean(),
+            subset[f"operator_{op}_eg_level2"].mean(),
+            subset[f"operator_{op}_eg_level3"].mean(),
+            subset[f"operator_{op}_eg_level4"].mean()
         ]
 
-        draw_eg_curve(avg_levels, label=f"Algorithm {alg}")
+        draw_eg_curve(avg_levels, label=f"Operator {op}")
 
-    plt.title("Average EG shape per algorithm (Operator 1)")
+    plt.title(f"Average EG level curves for all operators – Algorithm {algorithm}")
     plt.xlabel("Stage (attack → decay → sustain → release)")
-    plt.ylabel("Level 0-99")
+    plt.ylabel("Level (0–99)")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.show()
 
-def draw_all_operator_eg_curves_per_algorithm(df):
-    # Draws EG curves for all 6 operators separately, grouped by algorithm number.
-    algorithms = sorted(df["algorithm"].unique())
-
-    for alg in algorithms:
-        subset = df[df["algorithm"] == alg]
-        plt.figure(figsize=(14, 8))
-
-        for op in range(1, 7):
-            avg_levels = [
-                subset[f"operator_{op}_eg_level1"].mean(),
-                subset[f"operator_{op}_eg_level2"].mean(),
-                subset[f"operator_{op}_eg_level3"].mean(),
-                subset[f"operator_{op}_eg_level4"].mean()
-            ]
-
-            draw_eg_curve(avg_levels, label=f"Operator {op}")
-
-        plt.title(f"Average EG level curves for all operators - Algorithm {alg}")
-        plt.xlabel("Stage (attack → decay → sustain → release)")
-        plt.ylabel("Level 0–99")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-
+# Converts EG rate to a time duration in seconds.
 # Yamaha DX7’s actual rate-to-time mapping is nonlinear and influenced by many factors,
 # so this function tries to make up somewhat realistic visual estimate of those EG rates.
-# Maps eg_rate (0–99) to an approximate time duration in seconds.
 def rate_to_time(rate, max_time=5.0):
     # Higher eg_rate means smaller time (99 is fastest).
     # Estimates: fastest = 0.01 sec, slowest = 5 sec.
@@ -380,29 +373,27 @@ def rate_to_time(rate, max_time=5.0):
     return max_time * (1.0 - rate / 99.0) ** 2
 
 # Plots the average time-evolving envelope curves for all 6 operators in a given algorithm based on EG levels and rates.
-def draw_all_operator_time_eg_curves(df, algorithm):
-    import matplotlib.pyplot as plt
-    import numpy as np
-
+def draw_time_eg_curve(df, algorithm):
     subset = df[df["algorithm"] == algorithm]
+
     if subset.empty:
-        print(f"No data found for algorithm {algorithm}")
+        print(f"No patches found for algorithm {algorithm}.")
         return
 
     plt.figure(figsize=(12, 8))
 
     # Loops through the 6 operators.
-    for operator in range(1, 7):
+    for op in range(1, 7):
         try:
-            levels = [subset[f"operator_{operator}_eg_level{i}"].mean() for i in range(1, 5)]
-            rates  = [subset[f"operator_{operator}_eg_rate{i}"].mean() for i in range(1, 5)]
+            levels = [subset[f"operator_{op}_eg_level{i}"].mean() for i in range(1, 5)]
+            rates  = [subset[f"operator_{op}_eg_rate{i}"].mean() for i in range(1, 5)]
         except KeyError:
-            print(f"Missing EG data for operator {operator}")
+            print(f"Missing EG data for operator {op}.")
             continue
 
         times = [rate_to_time(r) for r in rates]
 
-        # Build envelope segments
+        # Builds envelope segments.
         envelope_times = [0]
         envelope_levels = [levels[0]]
 
@@ -419,7 +410,7 @@ def draw_all_operator_time_eg_curves(df, algorithm):
             envelope_times.extend(t[1:])
             envelope_levels.extend(l[1:])
 
-        plt.plot(envelope_times, envelope_levels, label=f"Operator {operator}")
+        plt.plot(envelope_times, envelope_levels, label=f"Operator {op}")
 
     plt.title(f"Simulated envelope generator(EG) stages - Algorithm {algorithm}")
     plt.xlabel("Time based on eg rate (approx. seconds)")
@@ -430,11 +421,11 @@ def draw_all_operator_time_eg_curves(df, algorithm):
     plt.tight_layout()
     plt.show()
 
-# Displays the main menu and routes user's choice.
+# Main menu function for the analysis.
 def menu(df, filename):
     while True:
         print("\nChoose what to analyze:")
-        print("1. Algorithm popularity")
+        print("1. Algorithm usage")
         print("2. LFO waveform")
         print("3. Transpose values")
         print("4. Operator output levels")
@@ -451,8 +442,8 @@ def menu(df, filename):
         print("15. Pitch modulation sensitivity")
         print("16. LFO pitch modulation depth")
         print("17. LFO amplitude modulation depth")
-        print("18. Pitch EG Rates (1–4)")
-        print("19. Pitch EG Levels (1–4)")
+        print("18. Pitch EG Rates 1–4")
+        print("19. Pitch EG Levels 1–4")
         print("20. EG rate 1-4")
         print("21. EG level 1-4")
         print("22. Key scaling parameters (per operator)")
@@ -461,11 +452,11 @@ def menu(df, filename):
         print("25. Key velocity sensitivity (per operator)")
         print("26. Amplitude modulation sensitivity (per operator)")
         print("27. Fine frequency tuning (per operator)")
-        print("28: Draw average EG level curves for all 6 operators per algorithm")
-        print("29: Simulate time-based EG curves for all 6 operators (per algorithm)")
+        print("28: Draw average EG level curve for an algorithm")
+        print("29: Simulate time-based EG curve for an algorithm")
         print("0. Exit")
 
-        choice = input("Enter choice (1–29), 0 for exit: ").strip()
+        choice = input("Enter choice (1–29), or 0 for exit: ").strip()
 
         if choice == '1':
             analyze_algorithm_distribution(df, filename)
@@ -510,17 +501,17 @@ def menu(df, filename):
                 analyze_operator_param(
                     df,
                     param_suffix=f"eg_rate{i}",
-                    title=f"Envelope Generator Rate {i}",
+                    title=f"Envelope Generator rate {i}",
                     xlabel=f"EG Rate {i} value (0–99)",
                     bins=np.arange(0, 101),
-                    per_operator=True  # or False for a combined chart
+                    per_operator=True
                 )
         elif choice == "21":
             for i in range(1, 5):
                 analyze_operator_param(
                     df,
                     param_suffix=f"eg_level{i}",
-                    title=f"Envelope Generator Level {i}",
+                    title=f"Envelope Generator level {i}",
                     xlabel=f"EG Level {i} value (0–99)",
                     bins=np.arange(0, 101),
                     per_operator=True
@@ -589,18 +580,25 @@ def menu(df, filename):
                 per_operator=True
             )
         elif choice == "28":
-            draw_all_operator_eg_curves_per_algorithm(df)
+            try:
+                alg = int(input("Enter algorithm number (1–32): ").strip())
+                if alg not in range(1, 33):
+                    print("Invalid algorithm number.")
+                else:
+                    draw_operator_eg_level_curve_for_algorithm(df, algorithm=alg)
+            except ValueError:
+                print("Please enter a valid algorithm number (1–32).")
         elif choice == "29":
             try:
                 alg = int(input("Enter algorithm number (1–32): ").strip())
                 if alg not in range(1, 33):
                     print("Invalid algorithm number.")
                 else:
-                    draw_all_operator_time_eg_curves(df, algorithm=alg)
+                    draw_time_eg_curve(df, algorithm=alg)
             except ValueError:
                 print("Please enter a valid algorithm number (1-32).")
         elif choice == '0':
-            print("Exiting DX7 analyzer...")
+            print("Exiting DX7 patch analyzer...")
             break
         else:
             print("Not a valid choice, please enter correct number.")
@@ -614,6 +612,7 @@ def inspect_invalid_transpose(df):
         print("Found transpose values over 48:")
         print(invalid[['id', 'name', 'transpose', 'source']])
 
+# Main function to run the analysis tool.
 def main():
     parser = argparse.ArgumentParser(description="Analyze DX7 patch data")
     parser.add_argument("csv", help="Path to CSV file")
