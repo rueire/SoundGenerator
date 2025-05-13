@@ -1,20 +1,31 @@
 # SoundGenerator
-March - May 2025
+March - May 2025 <br>
 
 Web-based Sound Generator that creates a downloadable cartridge <br>
-.syx and XML usage to be done with Python <br>
 
-## to-be Built with: <br>
+## Built with: <br>
 Backend: Python <br>
     -fastapi uvicorn
 Frontend: React + JS <br>
-.syx Generator: Python <br>
 
 ## Installation: <br>
-TBA <br>
+Needed:
+Git
+Node (created with  v22.14.0)
+npm
 
-## How to use IN DEVELOPMENT <br>
+Download this repo <br>
+in frontend folder, in cmd run:<br>
+'npm install', then 'npm run dev' <br>
 
+## HOW TO USE <br>
+
+**Open frontend:** <br>
+in SoundGenerator/frontend  => npm install <br>
+then: npm run dev <br>
+follow link
+
+**Backend portion is not usable at the moment** <br>
 **Connect backend to frontend:** <br>
 1 -open cmd in root, create venv(python -m venv venv) <br>
 or activate it (venv\Scripts\activate) <br> 
@@ -27,9 +38,4 @@ Updating append in backend dir terminal: pip freeze > requirements.txt
 3 -in terminal: uvicorn api:app --reload <br>
 OR if you know the port: <br>
 uvicorn api:app --reload --port XXXX <br>
-
-**Open frontend:** <br>
-in SoundGenerator/frontend  => npm install <br>
-then: npm run dev <br>
-follow link
 
