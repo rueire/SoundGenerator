@@ -32,8 +32,8 @@ or activate it (venv\Scripts\activate) <br>
 
 2 -go to BACKEND dir <br>
 NOTE this needs to be done only when first using venv or when req. has been updated!<br>
-open cmd and run in venv: pip install -r requirements.txt
-Updating append in backend dir terminal: pip freeze > requirements.txt
+open cmd and run in venv: pip install -r requirements.txt <br>
+Updating requirements.txt in backend dir terminal: pip freeze > requirements.txt
 
 3 -in terminal: uvicorn api:app --reload <br>
 OR if you know the port: <br>
