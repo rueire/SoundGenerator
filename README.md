@@ -5,14 +5,14 @@ Web-based Sound Generator that creates a downloadable cartridge <br>
 
 ## Built with: <br>
 Backend: Python <br>
-    -fastapi uvicorn
+    -fastapi uvicorn <br>
 Frontend: React + JS <br>
 
 ## Installation: <br>
-Needed:
-Git
-Node (created with  v22.14.0)
-npm
+Needed:  <br>
+Git <br>
+Node (created with  v22.14.0) <br>
+npm <br>
 
 Download this repo <br>
 in frontend folder, in cmd run:<br>
