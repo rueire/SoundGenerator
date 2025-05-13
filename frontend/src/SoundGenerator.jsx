@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import "./Generator.css";
 import ParameterForm from "./assets/parameters";
-import SyxUpload from "./assets/syxUpload";
+// import SyxUpload from "./assets/syxUpload";
 import generateSyx from "./assets/generateSyx";
 
 function SoundGenerator() {
@@ -13,7 +13,8 @@ function SoundGenerator() {
     setParams(data);
   }, []);
 
-  //dx7 patch OBJECT
+  // User's DX7 patch
+  // randomized is in generateSyx
   const generatePatch = () => {
     let brass_1_patch = {
       name: params.patchName ? params.patchName : "BRASS 1",
@@ -186,6 +187,9 @@ function SoundGenerator() {
 
   /*
   //backend to make syx --> xml
+  // This is only needed if backend is used. Kept in so that
+  //There is no need to re-create this
+
   const Uploadfile = async (file) => {
     console.log("Upload button pressed");
 
@@ -217,6 +221,8 @@ function SoundGenerator() {
 
   /*
   // download user's XML onClick
+  //Only used if backend is used!
+
   const XmlDownload = () => {
     if (xmlBlob) {
       const url = URL.createObjectURL(xmlBlob);

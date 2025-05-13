@@ -66,8 +66,8 @@ export default function ParameterForm({ onChange }) {
     //Handle basic Parameters
     const handleInput = (e) => {
         const { name, value } = e.target;
+        //set parameters
         setParams((prev) => ({
-            //name: Hakee kentän nimen, joka on määritetty name-attribuutilla (esim. name="algorithm")
             ...prev,
             [name]: isNaN(value) ? String(value) : Number(value),
         }));
@@ -75,10 +75,11 @@ export default function ParameterForm({ onChange }) {
 
     //Handle Operator Parameters
     const handleOperatorInput = (index, e) => {
-
+        // set oper.Parameters
         setParams((prev) => {
-            // console.log(params.operatorParams[index]); // debug
+            // create copy of operator params
             const updatedOperators = [...prev.operatorParams];
+            // update operators per user input
             updatedOperators[index][e.target.name] = parseInt(e.target.value, 10);
 
             return {
@@ -90,19 +91,20 @@ export default function ParameterForm({ onChange }) {
 
     //handle EG changes
     const handleEGChange = (index, e) => {
+        // set selected EG preset value from the event
         const chosenValue = parseInt(e.target.value, 10);
 
+        // Update the operator parameters
         setParams((prev) => {
             const updatedOperators = [...prev.operatorParams];
+            //update updateOperators and store in/set selectedEG
             updatedOperators[index] = {
                 ...updatedOperators[index],
                 ...egPresets[chosenValue],
                 selectedEG: chosenValue
                 
             };
-            // below are debugs
-            // console.log("Applying EG preset", chosenValue, "to operator", index);
-            
+
             return {
                 ...prev,
                 operatorParams: updatedOperators
@@ -111,10 +113,10 @@ export default function ParameterForm({ onChange }) {
         console.log(egPresets[chosenValue]);
     }
 
-    // useEffect to keep up w/parameter changes
+    // useEffect to keep up with parameter changes
     useEffect(() => {
-        onChange(params);
-    }, [params, onChange]);
+        onChange(params); // Call the onChange with the updated parameters
+    }, [params, onChange]); // run effect whenever 'params' or 'onChange' changes
 
     // useEffect to make sure eg preset values are there when page loads
     useEffect(() => {
@@ -122,7 +124,7 @@ export default function ParameterForm({ onChange }) {
             const updatedOperators = prev.operatorParams.map((op) => ({
                 ...op,
                 ...egPresets[0], //  set preset 0 as default
-                selectedEG: 0,
+                selectedEG: 0, // Mark preset 0 as selected
             }));
             return { ...prev, operatorParams: updatedOperators };
         });
