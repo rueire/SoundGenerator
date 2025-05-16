@@ -1,6 +1,9 @@
 # Instructions for data analysis <br>
 
-In order to analyze SysEx-files, you have to convert them into XML-format, and then to CSV-format, by using the scripts in this folder. <br>
+You can use the dx7_patches.csv, that is zipped in this folder.
+dx7_patches.csv holds information from over 300 000 voice patches.
+
+If you want to analyze other voice patches or your own collection of SysEx files, you have to convert them into XML-format, and then to CSV-format, by using the scripts in this folder. <br>
 Use the scripts in this order:
 1. syx_to_xml.py
 2. xml_to_csv.py
