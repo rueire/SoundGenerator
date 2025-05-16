@@ -51,7 +51,7 @@ Requirements:
 Install lxml with:
 pip install lxml
 
-Run the script with:
+Run the script with: <br>
 python xml_to_csv.py
 
 ## Analyze
